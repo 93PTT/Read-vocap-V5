@@ -176,10 +176,22 @@ function saveList(){
     });
   }
 
-  console.log("Danh sách:", name);
-  console.log(result);
+ // Lấy danh sách đã lưu trước đó
+let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
 
-  alert("Đã lưu danh sách!");
+// Thêm danh sách mới
+allLists.push({
+  name: name,
+  words: result
+});
+
+// Lưu lại vào localStorage
+localStorage.setItem('wordLists', JSON.stringify(allLists));
+
+alert("Đã lưu danh sách!");
+
+// Quay về trang chính
+window.location.href = "nhaptu.html";
 }
 </script>
 
