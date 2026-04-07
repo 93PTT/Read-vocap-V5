@@ -205,6 +205,36 @@ items.forEach(item => {
     listDropdown.classList.remove('show');
   });
 });
+function loadLists() {
+  const listDropdown = document.getElementById('listDropdown');
+  listDropdown.innerHTML = ''; // Xóa các item cũ
+
+  const allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+
+  if(allLists.length === 0){
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.textContent = 'Chưa có danh sách nào';
+    item.style.cursor = 'default';
+    listDropdown.appendChild(item);
+    return;
+  }
+
+  allLists.forEach(list => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.textContent = list.name;
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      alert("Chọn: " + list.name);
+      listDropdown.classList.remove('show');
+    });
+    listDropdown.appendChild(item);
+  });
+}
+
+// Gọi khi load trang
+window.addEventListener('DOMContentLoaded', loadLists);
 
 function goCSV(){
   alert("Nhập CSV");
