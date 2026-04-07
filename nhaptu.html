@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chọn cách nhập từ</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Poppins', sans-serif; background: #f9f9f9; display: flex; justify-content: center; padding: 30px 10px; }
+.app-container { max-width: 375px; width: 100%; }
+
+.header { text-align: center; margin-bottom: 20px; }
+.header img { width: 100%; max-width: 280px; border-radius: 20px; }
+.header .title { margin-top: 10px; font-style: italic; color: #555; font-size: 14px; }
+
+.card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+
+/* Grid 2 cột */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; justify-items: center; }
+
+/* Box */
+.box { padding: 15px 20px; border-radius: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.box:hover { opacity: 0.9; }
+
+.box-list { background: #FDE2CA; color: #555; }
+.box-csv { background: #DDF4E7; color: #555; }
+.box-manual { background: #E3ECFF; color: #555; }
+
+/* Ô trên span 2 cột */
+.box-top { grid-column: 1 / 3; }
+
+/* Dropdown */
+.dropdown { display: none; grid-column: 1 / 3; width: max-content; background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; margin-top: 5px; }
+.dropdown-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee; }
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: #f0f0ff; }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <div class="header">
+    <img src="cat.png" alt="Cat">
+    <div class="title">Chọn cách nhập từ</div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+
+      <!-- Ô trên span 2 cột -->
+      <div class="box box-list box-top" id="listBtn">DANH SÁCH CÓ SẴN</div>
+
+      <!-- Dropdown -->
+      <div class="dropdown" id="listDropdown">
+        <div class="dropdown-item">Danh sách 1</div>
+        <div class="dropdown-item">Danh sách 2</div>
+        <div class="dropdown-item">Danh sách 3</div>
+      </div>
+
+      <!-- 2 ô dưới -->
+      <div class="box box-csv" onclick="goCSV()">NHẬP TỪ FILE CSV</div>
+      <div class="box box-manual" onclick="goManual()">NHẬP THỦ CÔNG</div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Toggle dropdown
+const listBtn = document.getElementById('listBtn');
+const listDropdown = document.getElementById('listDropdown');
+
+listBtn.addEventListener('click', () => {
+  listDropdown.style.display = listDropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Click các ô khác
+function goCSV(){ alert("Nhập CSV"); }
+function goManual(){ alert("Nhập tay"); }
+
+// Click item trong dropdown
+const items = document.querySelectorAll('.dropdown-item');
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    alert("Chọn: " + item.textContent);
+    listDropdown.style.display = 'none';
+  });
+});
+</script>
+
+</body>
+</html>
