@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhập từ CSV</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f3f3f3;
+  display:flex;
+  justify-content:center;
+  padding:30px 10px;
+}
+.app-container { max-width:375px; width:100%; }
+.header { text-align:center; margin-bottom:20px; }
+.header img { width:100%; max-width:280px; border-radius:20px; }
+.header .title { margin-top:10px; font-style:italic; color:#555555; font-size:15px; font-weight:600; }
+
+.card {
+  background: #DDF4E7;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.input-group { margin-bottom:15px; }
+.input-group label { font-weight:600; font-size:15px; color:#555555; display:block; margin-bottom:6px; }
+.input-group input { width:100%; padding:12px; border-radius:12px; border:1px solid #ddd; font-size:13px; transition:0.2s; }
+.input-group input:focus { outline:none; border-color:#a5b4fc; box-shadow:0 0 0 2px rgba(165,180,252,0.3); }
+
+.btn {
+  width:100%; padding:14px; border-radius:15px; border:none; font-weight:600; cursor:pointer; background:#FDE2CA; transition:all 0.15s ease; font-size:15px; color:#555555;
+}
+.btn:hover { filter: brightness(0.95); transform: translateY(-2px); }
+.btn:active { transform: scale(0.97); filter: brightness(0.9); }
+</style>
+</head>
+
+<body>
+<div class="app-container">
+  <div class="header">
+    <img src="cat.png" alt="Cat">
+    <div class="title">Nhập từ file CSV</div>
+  </div>
+
+  <div class="card">
+    <div class="input-group">
+      <label>Tên danh sách</label>
+      <input type="text" id="listName" readonly>
+    </div>
+
+    <div class="input-group">
+      <label>Link file CSV từ Google Drive</label>
+      <input type="text" id="csvLink" placeholder="Dán link CSV ở đây">
+    </div>
+
+    <button class="btn" onclick="loadCSV()">Load CSV</button>
+  </div>
+</div>
+
+<script>
+// Chuyển link Google Drive sang link tải thẳng CSV
+function convertToDownloadLink(link){
+  // Ví dụ: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  const match = link.match(/\/d\/(.+)\/view/);
+  if(match) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+  return null;
+}
+
+// Load CSV
+async function loadCSV(){
+  const link = document.getElementById('csvLink').value.trim();
+  if(!link){
+    alert("Vui lòng nhập link CSV!");
+    return;
+  }
+
+  const downloadLink = convertToDownloadLink(link);
+  if(!downloadLink){
+    alert("Link không hợp lệ!");
+    return;
+  }
+
+  try {
+    const response = await fetch(downloadLink);
+    const text = await response.text();
+    const rows = text.split('\n').filter(r => r.trim() !== '');
+    const words = rows.map(row => {
+      const cols = row.split(',');
+      return { en: cols[0]?.trim(), vi: cols[1]?.trim() };
+    }).filter(item => item.en && item.vi);
+
+    if(words.length === 0){
+      alert("CSV trống hoặc không đúng format!");
+      return;
+    }
+
+    // Lấy tên file từ link
+    const fileName = link.split('/').slice(-2, -1)[0];
+    document.getElementById('listName').value = fileName;
+
+    // Lưu vào localStorage
+    const newList = {
+      name: fileName,
+      words: words
+    };
+    localStorage.setItem('selectedList', JSON.stringify(newList));
+
+    alert(`Đã load ${words.length} từ!`);
+    // Chuyển sang file chính tả
+    window.location.href = "chinhta.html";
+
+  } catch(e){
+    alert("Không thể tải file CSV, kiểm tra link và quyền truy cập.");
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>

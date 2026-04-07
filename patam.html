@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHÁT ÂM</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:snow;
+}
+.app-container{
+  max-width:375px;
+  margin:auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+  align-items:center;
+}
+.card{
+  width:100%;
+  background:white;
+  border-radius:28px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.18);
+}
+.word-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  padding:20px;
+  background:#f5f5f5;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  font-size:20px;
+  margin-bottom:20px;
+  width:100%;
+  text-align:center;
+}
+.vietnamese{
+  font-weight:600;
+  margin-bottom:15px;
+}
+.english{
+  font-weight:500;
+  color:#555;
+}
+.controls{
+  display:flex;
+  justify-content:space-between;
+}
+button{
+  padding:12px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  background:#DDF4E7;
+  transition:0.2s;
+}
+button:hover{
+  background:#ccebdc;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="card">
+    <div class="word-box">
+      <div class="vietnamese" id="vi-word">Con mèo</div>
+      <div class="english" id="en-word">Cat</div>
+    </div>
+    <div class="controls">
+      <button id="skip-btn">Bỏ qua</button>
+      <button id="pronounce-btn">Đọc</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Danh sách từ
+let words = [
+  {vi:"Con mèo", en:"cat"},
+  {vi:"Con chó", en:"dog"},
+  {vi:"Con chim", en:"bird"},
+  {vi:"Cá", en:"fish"}
+];
+let currentIndex = 0;
+
+// Load từ
+function loadWord(index){
+  document.getElementById("vi-word").textContent = words[index].vi;
+  document.getElementById("en-word").textContent = words[index].en;
+}
+
+// Next từ
+function nextWord(){
+  currentIndex++;
+  if(currentIndex >= words.length) currentIndex = 0;
+  loadWord(currentIndex);
+}
+
+// Phát âm từ
+function speakWord(){
+  const utterance = new SpeechSynthesisUtterance(words[currentIndex].en);
+  utterance.lang = 'en-US';
+  speechSynthesis.speak(utterance);
+}
+
+// Kiểm tra phát âm bằng Web Speech API
+function checkPronunciation(){
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'en-US';
+  recognition.onresult = (event)=>{
+    const spoken = event.results[0][0].transcript.toLowerCase();
+    if(spoken === words[currentIndex].en.toLowerCase()){
+      alert("Chính xác! Nghe lại từ một lần nữa.");
+      speakWord();
+      nextWord();
+    } else {
+      alert(`Bạn phát âm sai: "${spoken}"`);
+    }
+  };
+  recognition.start();
+}
+
+// Nút
+document.getElementById("skip-btn").onclick = nextWord;
+document.getElementById("pronounce-btn").onclick = checkPronunciation;
+
+// Load từ đầu
+loadWord(currentIndex);
+</script>
+</body>
+</html>

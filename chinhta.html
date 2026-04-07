@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chính tả nâng cao</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f3f3f3;
+  display:flex;
+  justify-content:center;
+  padding:30px 10px;
+}
+.app-container { max-width:375px; width:100%; }
+.header { text-align:center; margin-bottom:20px; }
+.header img { width:100%; max-width:280px; border-radius:20px; }
+.header .title { margin-top:10px; font-style:italic; color:#555555; font-size:15px; font-weight:600; }
+
+.card {
+  background: #FDE2CA;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.input-group { margin-bottom:15px; }
+.input-group label { font-weight:600; font-size:15px; color:#555555; display:block; margin-bottom:6px; }
+.input-group input { width:100%; padding:12px; border-radius:12px; border:1px solid #ddd; font-size:13px; transition:0.2s; }
+.input-group input:focus { outline:none; border-color:#a5b4fc; box-shadow:0 0 0 2px rgba(165,180,252,0.3); }
+
+.btn {
+  width:100%; padding:14px; border-radius:15px; border:none; font-weight:600; cursor:pointer; background:#DDF4E7; transition:all 0.15s ease; font-size:15px; color:#555555;
+}
+.btn:hover { filter: brightness(0.95); transform: translateY(-2px); }
+.btn:active { transform: scale(0.97); filter: brightness(0.9); }
+
+.feedback {
+  text-align:center;
+  font-weight:600;
+  margin-top:10px;
+  min-height:20px;
+  border-radius:12px;
+  padding:6px 0;
+}
+
+.feedback.correct { background:#DDF4E7; color:#0a7d3b; }
+.feedback.wrong { background:#F8D7DA; color:#721c24; }
+
+.counter {
+  text-align:center;
+  font-size:14px;
+  color:#555555;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="app-container">
+  <div class="header">
+    <img src="cat.png" alt="Cat">
+    <div class="title">Chính tả từ đã chọn</div>
+  </div>
+
+  <div class="card">
+    <div class="counter" id="wordCounter">Từ 0 / 0</div>
+
+    <div class="input-group">
+      <label>Từ tiếng Việt</label>
+      <input type="text" id="vietnameseWord" readonly>
+    </div>
+
+    <div class="input-group">
+      <label>Nhập từ tiếng Anh</label>
+      <input type="text" id="englishInput" placeholder="Nhập từ tiếng Anh">
+    </div>
+
+    <button class="btn" onclick="checkSpelling()">Kiểm tra</button>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+// Lấy danh sách đã chọn
+let selected = JSON.parse(localStorage.getItem('selectedList') || '{}');
+let wordList = selected.words ? [...selected.words] : []; // clone mảng
+let mistakeList = [];
+let currentIndex = 0;
+
+const vietnameseInput = document.getElementById('vietnameseWord');
+const englishInput = document.getElementById('englishInput');
+const feedback = document.getElementById('feedback');
+const counter = document.getElementById('wordCounter');
+
+function updateCounter(){
+  counter.textContent = `Từ ${currentIndex + 1} / ${wordList.length}`;
+}
+
+function getRandomIndex(){
+  return Math.floor(Math.random() * wordList.length);
+}
+
+function loadWord(){
+  if(wordList.length === 0){
+    alert("Đã xong danh sách!");
+    window.location.href = "nhaptu.html";
+    return;
+  }
+  currentIndex = getRandomIndex();
+  vietnameseInput.value = wordList[currentIndex].vi;
+  englishInput.value = '';
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  updateCounter();
+}
+
+function speakWord(text){
+  if('speechSynthesis' in window){
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    window.speechSynthesis.speak(utter);
+  }
+}
+
+function checkSpelling(){
+  if(wordList.length === 0) return;
+  const input = englishInput.value.trim();
+  const correct = wordList[currentIndex].en;
+
+  if(input.toLowerCase() === correct.toLowerCase()){
+    feedback.textContent = "Chính xác!";
+    feedback.className = 'feedback correct';
+    // Phát âm
+    speakWord(correct);
+    // Xóa từ đã đúng
+    wordList.splice(currentIndex, 1);
+  } else {
+    feedback.textContent = `Sai! Đáp án đúng: ${correct}`;
+    feedback.className = 'feedback wrong';
+    // Thêm vào danh sách sai để quay lại sau
+    mistakeList.push(wordList[currentIndex]);
+    // Xóa tạm từ này khỏi danh sách hiện tại
+    wordList.splice(currentIndex, 1);
+  }
+
+  // Khi hết danh sách hiện tại, đưa các từ sai trở lại
+  if(wordList.length === 0 && mistakeList.length > 0){
+    wordList = [...mistakeList];
+    mistakeList = [];
+  }
+
+  setTimeout(loadWord, 1000);
+}
+
+// Load từ đầu tiên khi mở trang
+window.addEventListener('DOMContentLoaded', loadWord);
+</script>
+
+</body>
+</html>
