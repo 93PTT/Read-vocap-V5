@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HỌC TỪ VỰNG</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:'Poppins', sans-serif;
+background:snow;
+}
+
+/* Container */
+.app-container{
+max-width:375px;
+margin:auto;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+padding:20px;
+}
+
+/* ===== HEADER ===== */
+.header{
+text-align:center;
+margin-top:10px;
+}
+
+/* Ảnh */
+.cat-img{
+width:100%;
+max-width:280px;
+border-radius:20px;
+}
+
+/* Tiêu đề */
+.title{
+margin-top:10px;
+font-size:15px;
+font-weight:600;
+color:#555555;
+font-style: italic;
+}
+
+/* ===== CARD ===== */
+.card{
+background:white;
+border-radius:28px;
+padding:20px;
+margin-top:20px; /* đẩy xuống dưới */
+box-shadow:0 20px 50px rgba(0,0,0,0.18);
+}
+
+/* Grid */
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+
+/* Box */
+.box{
+aspect-ratio:1/1;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:16px;
+font-weight:600;
+color:#555555;
+
+cursor:pointer;
+transition:0.2s;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* 4 màu */
+.box1{ background:#FDE2CA; }
+.box2{ background:#DDF4E7; }
+.box3{ background:#E3ECFF; }
+.box4{ background:#F3E5FF; }
+
+/* Hover */
+.box1:hover{ background:#f7cfae; }
+.box2:hover{ background:#ccebdc; }
+.box3:hover{ background:#d2ddff; }
+.box4:hover{ background:#e7d3ff; }
+
+/* Click */
+.box:active{
+transform:scale(0.95);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="cat.png" class="cat-img">
+    <div class="title">Hôm nay học gì?</div>
+  </div>
+
+  <!-- 4 Ô -->
+  <div class="card">
+    <div class="grid">
+      <div class="box box1" onclick="clickBox(1)">CHÍNH TẢ</div>
+      <div class="box box2" onclick="clickBox(2)">GHI NHỚ</div>
+      <div class="box box3" onclick="clickBox(3)">NGHE</div>
+      <div class="box box4" onclick="clickBox(4)">PHÁT ÂM</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+function clickBox(n){
+  alert("Anh bấm ô " + n);
+}
+
+</script>
+
+</body>
+</html>
