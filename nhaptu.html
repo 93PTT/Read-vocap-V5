@@ -39,7 +39,6 @@ body {
   color: #555555;
   font-size: 15px;
   font-weight:600;
-
 }
 
 .card {
@@ -162,11 +161,7 @@ body {
         DANH SÁCH ĐÃ TẠO
       </div>
 
-      <div class="dropdown" id="listDropdown">
-        <div class="dropdown-item">Danh sách 1</div>
-        <div class="dropdown-item">Danh sách 2</div>
-        <div class="dropdown-item">Danh sách 3</div>
-      </div>
+      <div class="dropdown" id="listDropdown"></div>
 
       <div class="box box-csv" onclick="goCSV()">
         NHẬP TỪ FILE CSV
@@ -196,19 +191,8 @@ document.addEventListener('click', (e) => {
   }
 });
 
-const items = document.querySelectorAll('.dropdown-item');
-
-items.forEach(item => {
-  item.addEventListener('click', (e) => {
-    e.stopPropagation();
-    alert("Chọn: " + item.textContent);
-    listDropdown.classList.remove('show');
-  });
-});
 function loadLists() {
-  const listDropdown = document.getElementById('listDropdown');
   listDropdown.innerHTML = ''; // Xóa các item cũ
-
   const allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
 
   if(allLists.length === 0){
@@ -224,11 +208,17 @@ function loadLists() {
     const item = document.createElement('div');
     item.className = 'dropdown-item';
     item.textContent = list.name;
+
     item.addEventListener('click', (e) => {
       e.stopPropagation();
-      alert("Chọn: " + list.name);
-      listDropdown.classList.remove('show');
+      
+      // Lưu danh sách đã chọn
+      localStorage.setItem('selectedList', JSON.stringify(list));
+      
+      // Chuyển sang trang chính tả
+      window.location.href = "chinhta.html";
     });
+
     listDropdown.appendChild(item);
   });
 }
@@ -243,7 +233,6 @@ function goCSV(){
 function goManual(){
   window.location.href = "nhapthucong.html";
 }
-
 </script>
 
 </body>
