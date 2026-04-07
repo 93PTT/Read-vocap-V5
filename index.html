@@ -8,7 +8,14 @@
 <title>HỌC TỪ VỰNG</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+/* Xong khai báo biến */
 
+
+
+
+
+
+/* Bắt đầu style */
 <style>
 
 *{box-sizing:border-box;}
@@ -53,13 +60,24 @@ font-style: italic;
 }
 
 /* ===== CARD ===== */
-.card{
+.card-1{
+width: 250px; /* nhỏ hơn container max-width 375px */
+margin: 20px auto; /* căn giữa card */
+background:white;
+border-radius:28px;
+padding:20px;
+margin-top:10px; /* đẩy xuống dưới */
+box-shadow:0 20px 50px rgba(0,0,0,0.18);
+}
+
+.card-2{
 background:white;
 border-radius:28px;
 padding:20px;
 margin-top:20px; /* đẩy xuống dưới */
 box-shadow:0 20px 50px rgba(0,0,0,0.18);
 }
+
 
 /* Grid */
 .grid{
@@ -102,10 +120,44 @@ box-shadow:0 8px 20px rgba(0,0,0,0.08);
 transform:scale(0.95);
 }
 
+/* Ô dài nhỏ phía trên, hình chữ nhật, vừa chữ */
+.box-long{
+  background:gainsboro;
+  border-radius:12px;
+  padding:10px 0;
+  width:100%;
+  justify-content:center;
+  font-size:15px;
+  font-weight:600;
+  text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+  
+  aspect-ratio: auto; /* thêm dòng này để không bị ép vuông */
+}
+
+.box-long:hover{
+  background:lightgray;
+}
+.box-long:active{
+  transform:scale(0.95);
+}
+
 </style>
+/* Kết thúc style */
+
 
 </head>
+/* Kêt thúc phần head */
 
+
+
+
+
+
+
+
+/* Bắt đầu body */
 <body>
 
 <div class="app-container">
@@ -116,8 +168,13 @@ transform:scale(0.95);
     <div class="title">Hôm nay học gì?</div>
   </div>
 
+<!-- Ô dài nhỏ phía trên -->
+<div class="card-1">
+  <div class="box box-long" onclick="clickBox(0)">CHỌN DANH SÁCH TỪ</div>
+</div>
+
   <!-- 4 Ô -->
-  <div class="card">
+  <div class="card-2">
     <div class="grid">
       <div class="box box1" onclick="clickBox(1)">CHÍNH TẢ</div>
       <div class="box box2" onclick="clickBox(2)">GHI NHỚ</div>
