@@ -36,12 +36,13 @@ body {
 .header .title {
   margin-top: 10px;
   font-style: italic;
-  color: #555;
-  font-size: 14px;
+  color: #555555;
+  font-size: 15px;
+  font-weight:600;
 }
 
 .card {
-  background: white;
+  background: #FDE2CA;
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
@@ -53,9 +54,9 @@ body {
 }
 
 .input-group label {
-  font-weight: 500;
-  font-size: 14px;
-  color: #555;
+  font-weight: 600;
+  font-size: 15px;
+  color: #555555;
   display: block;
   margin-bottom: 6px;
 }
@@ -67,7 +68,7 @@ body {
   border-radius: 12px;
   border: 1px solid #ddd;
   font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   transition: 0.2s;
 }
 
@@ -81,7 +82,8 @@ body {
 
 /* TEXTAREA */
 textarea {
-  min-height: 120px;
+  min-height: 70px;
+  max-height: 120px;
   resize: vertical;
 }
 
@@ -93,8 +95,10 @@ textarea {
   border: none;
   font-weight: 600;
   cursor: pointer;
-  background: #E3ECFF;
+  background: #DDF4E7;
   transition: all 0.15s ease;
+  font-size: 15px;
+  color: #555555;
 }
 
 /* Hover */
@@ -131,13 +135,13 @@ textarea {
     <!-- Từ tiếng Anh -->
     <div class="input-group">
       <label>Từ tiếng Anh (mỗi dòng 1 từ)</label>
-      <textarea id="englishWords" placeholder="hello&#10;world&#10;apple"></textarea>
+      <textarea id="englishWords" placeholder="hello&#10;apple"></textarea>
     </div>
 
     <!-- Nghĩa tiếng Việt -->
     <div class="input-group">
       <label>Nghĩa tiếng Việt (mỗi dòng tương ứng)</label>
-      <textarea id="vietnameseWords" placeholder="xin chào&#10;thế giới&#10;táo"></textarea>
+      <textarea id="vietnameseWords" placeholder="xin chào&#10;táo"></textarea>
     </div>
 
     <!-- Button -->
