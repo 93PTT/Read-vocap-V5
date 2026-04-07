@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhập thủ công</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f3f3f3;
+  display: flex;
+  justify-content: center;
+  padding: 30px 10px;
+}
+
+.app-container {
+  max-width: 375px;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header img {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 20px;
+}
+
+.header .title {
+  margin-top: 10px;
+  font-style: italic;
+  color: #555;
+  font-size: 14px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* INPUT */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #555;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+/* Focus đẹp */
+.input-group input:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 2px rgba(165,180,252,0.3);
+}
+
+/* TEXTAREA */
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* BUTTON */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: #E3ECFF;
+  transition: all 0.15s ease;
+}
+
+/* Hover */
+.btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-2px);
+}
+
+/* Click */
+.btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <div class="header">
+    <img src="cat.png" alt="Cat">
+    <div class="title">Nhập danh sách từ của bạn</div>
+  </div>
+
+  <div class="card">
+
+    <!-- Tên danh sách -->
+    <div class="input-group">
+      <label>Tên danh sách</label>
+      <input type="text" id="listName" placeholder="Ví dụ: Từ vựng TOEIC">
+    </div>
+
+    <!-- Từ tiếng Anh -->
+    <div class="input-group">
+      <label>Từ tiếng Anh (mỗi dòng 1 từ)</label>
+      <textarea id="englishWords" placeholder="hello&#10;world&#10;apple"></textarea>
+    </div>
+
+    <!-- Nghĩa tiếng Việt -->
+    <div class="input-group">
+      <label>Nghĩa tiếng Việt (mỗi dòng tương ứng)</label>
+      <textarea id="vietnameseWords" placeholder="xin chào&#10;thế giới&#10;táo"></textarea>
+    </div>
+
+    <!-- Button -->
+    <button class="btn" onclick="saveList()">Lưu danh sách</button>
+
+  </div>
+
+</div>
+
+<script>
+function saveList(){
+  const name = document.getElementById('listName').value.trim();
+  const en = document.getElementById('englishWords').value.trim().split('\n');
+  const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
+
+  if(!name){
+    alert("Vui lòng nhập tên danh sách");
+    return;
+  }
+
+  if(en.length !== vi.length){
+    alert("Số dòng không khớp!");
+    return;
+  }
+
+  let result = [];
+
+  for(let i = 0; i < en.length; i++){
+    result.push({
+      en: en[i],
+      vi: vi[i]
+    });
+  }
+
+  console.log("Danh sách:", name);
+  console.log(result);
+
+  alert("Đã lưu danh sách!");
+}
+</script>
+
+</body>
+</html>
