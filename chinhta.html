@@ -56,8 +56,8 @@
   		position: absolute;
   		top: 10px;
   		right: 15px;
-  		font-size: 16px;
-  		font-weight: 600;
+  		font-size: 14px;
+  		font-weight: 500;
   		color: #555555;
 	}
 
@@ -74,7 +74,7 @@
 	.viet-group label {
   		display: block;
   		font-weight: 600;
-  		font-size: 15px;
+  		font-size: 18px;
   		color: #555555;
   		margin-bottom: 6px;
 	}
@@ -85,8 +85,10 @@
   		padding: 15px;
   		border-radius: 12px;
   		border: 1px solid #ddd;
-  		font-size: 16px;
+  		font-size: 18px;
   		text-align: center;
+  		color: #555555;
+  		font-weight: 600;
 	}
 
 
@@ -134,6 +136,7 @@
   		display: flex;
   		justify-content: space-between;
   		margin-top: 15px;
+  		margin-bottom: 20px;
 	}
 
 
@@ -202,6 +205,7 @@
 
   	</div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 
 
@@ -233,7 +237,7 @@
 	const counter = document.getElementById('wordCounter');
 
 	function updateCounter(){
-  	counter.textContent = `${currentIndex + 1} / ${wordList.length + mistakeList.length}`;
+  	counter.textContent = `Còn lại: ${wordList.length}`;
 	}
 
 	function getRandomIndex(){
@@ -241,11 +245,25 @@
 	}
 
 	function loadWord(){
-  	if(wordList.length === 0){
-    	alert("Đã xong danh sách!");
-    	window.location.href = "index.html"; 
-    	return;
-  	}
+  	if(wordList.length === 0 && mistakeList.length === 0){
+	// Bắn pháo bông
+  	confetti({
+    	particleCount: 150,
+    	spread: 70,
+    	origin: { y: 0.6 }
+  	});
+
+  	// Bắn thêm vài lần cho đẹp
+  	setTimeout(() => confetti({ particleCount: 100, spread: 100 }), 300);
+  	setTimeout(() => confetti({ particleCount: 100, spread: 120 }), 600);
+
+  	// Sau 2 giây quay về trang chính
+  	setTimeout(() => {
+    	window.location.href = "index.html";
+  	}, 2000);
+
+  	return;
+	}
 
   	currentIndex = getRandomIndex();
   	vietnameseInput.value = wordList[currentIndex].vi;
@@ -285,7 +303,7 @@
     	mistakeList = [];
   	}
 
-  	setTimeout(loadWord, 1000);
+  	setTimeout(loadWord, 2000);
 	}
 
 	function goBack(){
