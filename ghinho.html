@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHI NHỚ</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Poppins', sans-serif;
+  background:snow;
+  display:flex;
+  justify-content:center;
+  padding:20px 10px;
+  overflow:hidden;
+  min-height:100vh;
+}
+
+.app-container { max-width:375px; width:100%; }
+
+.card {
+  background:linen;
+  border-radius:20px;
+  padding:25px 20px;
+  max-width:375px;
+  width:100%;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
+
+.header { text-align:center; margin-bottom:10px; }
+.header img { width:100%; max-width:280px; border-radius:20px; }
+
+.word-box{
+  background:#DDF4E7;
+  border-radius:15px;
+  padding:20px;
+  font-size:18px;
+  font-weight:600;
+  color:#555555;
+  min-height:60px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.bottom-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+
+.box{
+  background:white;
+  border-radius:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:16px;
+  font-weight:600;
+  color:#555555;
+  cursor:pointer;
+  transition:0.2s;
+  padding:10px;
+}
+
+.box:hover{ background:lightgray; }
+.box:active{ transform:scale(0.95); }
+
+/* PHÁO HOA */
+#fireworksCanvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:999;
+  display:none;
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <div class="header">
+    <img src="cat.png" alt="Cat">
+  </div>
+
+  <div class="card">
+    <div class="switch-btns" style="display:flex; justify-content:space-around; margin-bottom:15px;">
+      <div class="box" id="btnEngToViet" style="flex:1; text-align:center;">Anh → Việt</div>
+      <div class="box" id="btnVietToEng" style="flex:1; text-align:center;">Việt → Anh</div>
+    </div>
+
+    <div class="word-box" id="topWordBox"><span id="topWord"></span></div>
+    <div class="word-box" id="bottomWordBox"><span id="bottomWord"></span></div>
+
+  </div>
+
+  <div class="bottom-grid">
+    <div class="box" id="btnBack">Quay lại</div>
+    <div class="box" id="btnSpeak">Phát âm</div>
+    <div class="box" id="btnNext">Next</div>
+  </div>
+</div>
+
+<canvas id="fireworksCanvas"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+// Danh sách đã chọn
+let selectedList = JSON.parse(localStorage.getItem('selectedList') || 'null');
+let words = selectedList?.words || [];
+if(!selectedList || words.length===0){ alert("Danh sách từ chưa chọn!"); }
+
+let currentIndex = 0;
+let mode = "engToViet"; // engToViet hoặc vietToEng
+
+const topWord = document.getElementById('topWord');
+const bottomWord = document.getElementById('bottomWord');
+
+function updateTopWord(){
+  if(words.length===0) return;
+  let w = words[currentIndex];
+  if(mode==="engToViet"){ topWord.textContent=w.en; }
+  else{ topWord.textContent=w.vi; }
+  bottomWord.textContent='';
+}
+updateTopWord();
+
+// Next logic
+document.getElementById('btnNext').onclick = () => {
+  if(words.length===0) return;
+  let w = words[currentIndex];
+
+  if(bottomWord.textContent===""){
+    // hiện nghĩa
+    bottomWord.textContent = (mode==="engToViet") ? w.vi : w.en;
+  } else {
+    // chuyển từ mới
+    currentIndex++;
+    if(currentIndex>=words.length){
+      // học xong → pháo hoa
+      shootFireworks();
+      setTimeout(()=>{ window.location.href="index.html"; },2000);
+      return;
+    }
+    updateTopWord();
+  }
+};
+
+// Nút Back
+document.getElementById('btnBack').onclick = ()=>{ window.location.href="index.html"; };
+
+// Nút Phát âm
+document.getElementById('btnSpeak').onclick = () => {
+  if(bottomWord.textContent==="") return; // chỉ khi ô 2 hiện
+  let w = words[currentIndex];
+  let text = w.en;
+  let utter = new SpeechSynthesisUtterance(text);
+  utter.lang='en-US';
+  speechSynthesis.speak(utter);
+};
+
+// Chọn chế độ
+document.getElementById('btnEngToViet').onclick = ()=>{
+  mode="engToViet"; currentIndex=0; updateTopWord();
+};
+document.getElementById('btnVietToEng').onclick = ()=>{
+  mode="vietToEng"; currentIndex=0; updateTopWord();
+};
+
+// PHÁO HOA
+function shootFireworks(){
+  const canvas = document.getElementById('fireworksCanvas');
+  canvas.style.display='block';
+  const myConfetti = confetti.create(canvas,{resize:true,useWorker:true});
+  myConfetti({
+    particleCount: 150,
+    spread: 70,
+    origin: {y:0.6}
+  });
+  setTimeout(()=>{ myConfetti({particleCount:100,spread:100,origin:{y:0.6}}); },300);
+  setTimeout(()=>{ myConfetti({particleCount:100,spread:120,origin:{y:0.6}}); },600);
+}
+</script>
+
+</body>
+</html>
