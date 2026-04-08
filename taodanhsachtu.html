@@ -2,23 +2,32 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<!-- 🔹 CHỈNH ĐỂ ẨN STATUS BAR TRÊN IPHONE -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+
 <title>Nhập danh sách từ</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-margin:0;
   font-family: 'Poppins', sans-serif;
   background: snow;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
   overflow: hidden;
+
+  /* 🔹 SAFE AREA CHO IPHONE NOTCH */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .app-container {
