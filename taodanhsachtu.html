@@ -4,222 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Nhập danh sách từ</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-
-
-
 <style>
-	* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
+body {
+  font-family: 'Poppins', sans-serif;
+  background: snow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  overflow: hidden;
+}
 
-	html, body {
-  		height: 100%;
-	}
+.app-container {
+  width: 100%;
+  max-width: 375px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
+.card {
+  background: linen;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+  overflow-y: auto;
+}
 
+/* INPUT */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 
+.input-group label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 6px;
+}
 
-	body {
-  		font-family: 'Poppins', sans-serif;
-  		background: snow;
-  		display: flex;
-  		justify-content: center;
-  		align-items: center;
-  		padding: 10px;
-	}
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  transition: 0.2s;
+}
 
+.input-group input:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 2px rgba(165,180,252,0.3);
+}
 
+textarea {
+  min-height: 180px;
+  max-height: 250px;
+  resize: vertical;
+}
 
-	.app-container {
-  		width: 100%;
-  		max-width: 375px;
-  		height: 100%;
-  		display: flex;
-  		flex-direction: column;
-  		justify-content: center;
-	}
+/* BUTTON */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: gainsboro;
+  transition: all 0.15s ease;
+  font-size: 15px;
+  color: #555;
+  margin-top: 10px;
+}
 
+.btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-2px);
+}
 
-	.card {
-  		background: linen;
-  		border-radius: 20px;
-  		padding: 20px;
-  		box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  		display: flex;
-  		flex-direction: column;
-  		gap: 15px;
-  		height: 90%; /* chiếm gần hết màn hình */
-  		overflow-y: auto;
-	}
+.btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.9);
+}
 
+/* 🔥 POPUP NỔI */
+#saveMessage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
 
+  justify-content: center;
+  align-items: center;
 
-	/* INPUT */
-	.input-group {
-  		display: flex;
-  		flex-direction: column;
-  		width: 100%;
-	}
+  background: rgba(0,0,0,0.3);
+  z-index: 999;
+}
 
+.saved-box {
+  padding: 20px 30px;
+  border-radius: 15px;
+  background: white;
+  font-size: 16px;
+  font-weight: 600;
+  color: #065f46;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
-	.input-group label {
-  		font-weight: 600;
-  		font-size: 15px;
-  		color: #555555;
-  		margin-bottom: 6px;
-	}
+  animation: pop 0.3s ease;
+}
 
-
-	.input-group input,
-	.input-group textarea {
-  		width: 100%;
-  		padding: 12px;
-  		border-radius: 12px;
-  		border: 1px solid #ddd;
-  		font-family: 'Poppins', sans-serif;
-  		font-size: 14px;
-  		transition: 0.2s;
-	}
-
-
-
-	/* Focus đẹp */
-		.input-group input:focus,
-		.input-group textarea:focus {
-  		outline: none;
-  		border-color: #a5b4fc;
-  		box-shadow: 0 0 0 2px rgba(165,180,252,0.3);
-	}
-
-
-
-	/* TEXTAREA */
-	textarea {
-  		min-height: 200px;  /* tăng chiều cao tối thiểu */
-  		max-height: 300px;
-  		resize: vertical;
-	}
-
-
-
-	/* BUTTON */
-	.btn {
-  		width: 100%;
-  		padding: 14px;
-  		border-radius: 15px;
-  		border: none;
-  		font-weight: 600;
-  		cursor: pointer;
-  		background: gainsboro;
-  		transition: all 0.15s ease;
-  		font-size: 15px;
-  		color: #555555;
-  		margin-top: 10px;
-	}
-
-
-	/* Hover */
-	.btn:hover {
-  		filter: brightness(0.95);
-  		transform: translateY(-2px);
-	}
-
-
-	/* Click */
-		.btn:active {
-  		transform: scale(0.97);
-  		filter: brightness(0.9);
-	}
+@keyframes pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 </style>
 </head>
 
-
-
-
-
-
 <body>
 
-	<div class="app-container">
-  		<div class="card">
+<div class="app-container">
+  <div class="card">
 
+    <div class="input-group">
+      <label>Tên danh sách</label>
+      <input type="text" id="listName">
+    </div>
 
-    	<!-- Tên danh sách -->
-    	<div class="input-group">
-      		<label>Tên danh sách</label>
-      		<input type="text" id="listName">
-    	</div>
+    <div class="input-group">
+      <label>Từ tiếng Anh</label>
+      <textarea id="englishWords"></textarea>
+    </div>
 
+    <div class="input-group">
+      <label>Nghĩa tiếng Việt</label>
+      <textarea id="vietnameseWords"></textarea>
+    </div>
 
+    <button class="btn" onclick="saveList()">Lưu danh sách</button>
 
-    	<!-- Từ tiếng Anh -->
-    	<div class="input-group">
-      		<label>Từ tiếng Anh</label>
-      		<textarea id="englishWords"></textarea>
-    	</div>
-
-
-
-    	<!-- Nghĩa tiếng Việt -->
-    	<div class="input-group">
-      		<label>Nghĩa tiếng Việt</label>
-      		<textarea id="vietnameseWords"></textarea>
-    	</div>
-
-
-
-    	<!-- Button -->
-    		<button class="btn" onclick="saveList()">Lưu danh sách</button>
-	</div>
+  </div>
 </div>
 
-
-
-
-
-
-
+<!-- 🔥 POPUP NẰM NGOÀI -->
+<div id="saveMessage">
+  <div class="saved-box">✅ Đã lưu danh sách!</div>
+</div>
 
 <script>
-	function saveList(){
-  	const name = document.getElementById('listName').value.trim();
-  	const en = document.getElementById('englishWords').value.trim().split('\n');
-  	const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
+function saveList(){
+  const name = document.getElementById('listName').value.trim();
+  const en = document.getElementById('englishWords').value.trim().split('\n');
+  const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
 
-  	if(!name){
-    	alert("Vui lòng nhập tên danh sách");
-    	return;
-  	}
+  if(!name){
+    alert("Vui lòng nhập tên danh sách");
+    return;
+  }
 
-  	if(en.length !== vi.length){
-    	alert("Số dòng không khớp!");
-    	return;
-  	}
+  if(en.length !== vi.length){
+    alert("Số dòng không khớp!");
+    return;
+  }
 
-  	let result = [];
-  	for(let i = 0; i < en.length; i++){
-    	result.push({ en: en[i], vi: vi[i] });
-  	}
+  let result = [];
+  for(let i = 0; i < en.length; i++){
+    result.push({ en: en[i], vi: vi[i] });
+  }
 
+  let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+  allLists.push({ name: name, words: result });
+  localStorage.setItem('wordLists', JSON.stringify(allLists));
 
-  	// Lấy danh sách đã lưu trước đó
-  	let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+  // 🔥 HIỆN POPUP
+  const msg = document.getElementById('saveMessage');
+  msg.style.display = 'flex';
 
-
-  	// Thêm danh sách mới
-  	allLists.push({ name: name, words: result });
-
-
-  	// Lưu lại vào localStorage
-  	localStorage.setItem('wordLists', JSON.stringify(allLists));
-
-  	alert("Đã lưu danh sách!");
-
-  	// Quay về file index
-  	window.location.href = "index.html";
+  // 🔥 CHỜ 2 GIÂY RỒI CHUYỂN TRANG
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 2000);
 }
-
 </script>
+
 </body>
 </html>
