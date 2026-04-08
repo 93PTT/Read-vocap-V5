@@ -6,8 +6,6 @@
 <title>HỌC TỪ VỰNG</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-
-
 <style>
 	*{box-sizing:border-box;}
 
@@ -18,7 +16,6 @@
 		overflow: hidden;
 	}
 
-
 	.app-container{
 		max-width:375px;
 		margin:auto;
@@ -28,20 +25,16 @@
 		padding:20px;
 	}
 
-
-
 	.header{
 		text-align:center;
 		margin-top:10px;
 	}
-
 
 	.cat-img{
 		width:100%;
 		max-width:280px;
 		border-radius:20px;
 	}
-
 
 	.title{
 		margin-top:10px;
@@ -51,36 +44,30 @@
 		font-style: italic;
 	}
 
-
 	.card-1{
-		width: 250px; /* nhỏ hơn container max-width 375px */
-		margin: 0px auto; /* căn giữa card */
+		width: 250px;
+		margin: 0px auto;
 		background:white;
 		border-radius:20px;
 		padding:20px;
-		margin-top:10px; /* đẩy xuống dưới */
+		margin-top:10px;
 		box-shadow:0 20px 50px rgba(0,0,0,0.18);
 		position:relative;
 	}
-
 
 	.card-2{
 		background:white;
 		border-radius:28px;
 		padding:20px;
-		margin-top:20px; /* đẩy xuống dưới */
+		margin-top:20px;
 		box-shadow:0 20px 50px rgba(0,0,0,0.18);
 	}
-
-
 
 	.grid{
 		display:grid;
 		grid-template-columns:1fr 1fr;
 		gap:15px;
 	}
-
-
 
 	.box{
 		aspect-ratio:1/1;
@@ -96,8 +83,6 @@
 		box-shadow:0 8px 20px rgba(0,0,0,0.08);
 	}
 
-
-
 	.box1{ background:#FDE2CA; }
 	.box2{ background:#DDF4E7; }
 	.box3{ background:#E3ECFF; }
@@ -111,7 +96,6 @@
 	.box:active{
 		transform:scale(0.95);
 	}
-
 
 	.box-long{
 		background:gainsboro;
@@ -127,7 +111,6 @@
 		aspect-ratio: auto; 
 	}
 
-
 	.box-long:hover{
 		background:lightgray;
 	}
@@ -135,8 +118,6 @@
 	.box-long:active{
 		transform:scale(0.95);
 	}
-
-
 
 	.dropdown{
 		display:none;
@@ -163,20 +144,58 @@
 	.dropdown-item:last-child{ border-bottom:none; }
 	.dropdown-item:hover{ background:#f0f0f0; }
 
+	/* Modal xóa danh sách */
+	.modal-bg{
+		position: fixed;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background: rgba(0,0,0,0.3);
+		display:flex;
+		align-items:center;
+		justify-content:center;
+		z-index:100;
+		display:none;
+	}
+
+	.modal-box{
+		background:white;
+		border-radius:20px;
+		padding:20px;
+		width:250px;
+		text-align:center;
+		box-shadow:0 10px 30px rgba(0,0,0,0.2);
+	}
+
+	.modal-box p{
+		margin-bottom:20px;
+		font-weight:600;
+		color:#555555;
+	}
+
+	.modal-btn{
+		background:gainsboro;
+		border:none;
+		border-radius:10px;
+		padding:10px;
+		width:45%;
+		margin:0 2%;
+		font-weight:600;
+		cursor:pointer;
+		transition:0.2s;
+	}
+
+	.modal-btn:hover{
+		background:lightgray;
+	}
+
 </style>
 </head>
 
-
-
-
-
-
-
-
-
 <body>
 
-	<div class="app-container">
+<div class="app-container">
 
   	<!-- HEADER -->
   	<div class="header">
@@ -190,7 +209,6 @@
     		<div class="dropdown" id="dropdownList"></div>
   	</div>
 
-
   	<!-- 4 Ô -->
   	<div class="card-2">
     		<div class="grid">
@@ -202,9 +220,14 @@
   	</div>
 </div>
 
-
-
-
+<!-- Modal xóa -->
+<div class="modal-bg" id="modalBg">
+	<div class="modal-box">
+		<p id="modalText">Bạn có muốn xóa danh sách?</p>
+		<button class="modal-btn" id="deleteBtn">Xóa</button>
+		<button class="modal-btn" id="cancelBtn">Hủy</button>
+	</div>
+</div>
 
 <script>
 	// Dropdown danh sách từ
@@ -212,6 +235,13 @@
 	const dropdownBox = document.getElementById('dropdownBox');
 	const dropdownList = document.getElementById('dropdownList');
 	let selectedList = null;
+
+	const modalBg = document.getElementById('modalBg');
+	const modalText = document.getElementById('modalText');
+	const deleteBtn = document.getElementById('deleteBtn');
+	const cancelBtn = document.getElementById('cancelBtn');
+
+	let listToDeleteIndex = null;
 
 	dropdownBox.onclick = () => {
   	dropdownList.innerHTML = '';
@@ -228,22 +258,52 @@
     	createDiv.onclick = ()=>{ window.location.href='taodanhsachtu.html'; };
     	dropdownList.appendChild(createDiv);
 
-    	wordLists.forEach(list=>{
+    	wordLists.forEach((list, index) => {
       	let div = document.createElement('div');
       	div.className='dropdown-item';
       	div.textContent=list.name;
+
+      	// Click bình thường để chọn
       	div.onclick=()=>{
-        selectedList=list;
-        localStorage.setItem('selectedList', JSON.stringify(selectedList));
-        dropdownBox.textContent=list.name;
-        dropdownList.style.display='none';
+        	selectedList=list;
+        	localStorage.setItem('selectedList', JSON.stringify(selectedList));
+        	dropdownBox.textContent=list.name;
+        	dropdownList.style.display='none';
       	};
+
+      	// Nhấn giữ để mở modal xóa
+      	let pressTimer;
+      	div.onmousedown = () => {
+        	pressTimer = setTimeout(() => {
+          	modalText.textContent = `Bạn có muốn xóa danh sách "${list.name}" không?`;
+          	modalBg.style.display='flex';
+          	listToDeleteIndex = index;
+        	}, 1000);
+      	};
+      	div.onmouseup = () => clearTimeout(pressTimer);
+      	div.onmouseleave = () => clearTimeout(pressTimer);
+
       	dropdownList.appendChild(div);
     	});
   	}
   	dropdownList.style.display = dropdownList.style.display==='block' ? 'none' : 'block';
 	};
 
+	// Modal buttons
+	deleteBtn.onclick = () => {
+		if(listToDeleteIndex !== null){
+			wordLists.splice(listToDeleteIndex,1);
+			localStorage.setItem('wordLists', JSON.stringify(wordLists));
+			dropdownBox.textContent='CHỌN DANH SÁCH TỪ';
+			modalBg.style.display='none';
+			listToDeleteIndex = null;
+		}
+	};
+
+	cancelBtn.onclick = () => {
+		modalBg.style.display='none';
+		listToDeleteIndex = null;
+	};
 
 	// Link 4 ô học
 	function startLearning(url){
