@@ -74,6 +74,7 @@
 		color:#555555;
 		justify-content:center;
 		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
 	}
 
 
@@ -92,6 +93,7 @@
 		color:#555555;
 		justify-content:center;
 		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
 	}
 
 
@@ -197,6 +199,10 @@
 	
 	.button-2:hover{ background:orange; }
 	.button-2:active{transform:scale(0.95);}
+	.button-2.active{
+  		background: orange;
+  		color: white;
+	}
 
 
 	
@@ -212,8 +218,8 @@
 	<div class="app-container">
 		<div class="card-1">
 			<div class="grid-2">
-    				<button class="button-2">Anh</button>
-    				<button class="button-2">Việt</button>
+    				<button id="btnAnh" class="button-2 active" onclick="showEnglish()">Anh</button>
+				<button id="btnViet" class="button-2" onclick="showVietnamese()">Việt</button>
 		</div>
 			<div class="box box-3" id="btnO3">Từ còn lại</div>
 			<div class="box box-1" id="btnO1">Ô 1</div>
@@ -224,11 +230,99 @@
 		<div class="card-2 grid-1">
     			<button class="button-1">Back</button>
     			<button class="button-1">Phát âm</button>
-    			<button class="button-1">Next</button>
+    			<button class="button-1" onclick="nextWord()">Next</button>
 		</div>
 	</div>
 
-	
+
+
+
+<script>
+let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+let currentList = allLists[0]?.words || [];
+shuffleArray(currentList);
+
+let currentIndex = 0;
+let mode = 'en'; // mặc định nút Anh sáng
+let showAnswer = false; // ẩn Ô 2 lúc đầu
+
+// 👉 Hiển thị từ
+function renderWord(){
+  if(currentList.length === 0){
+    document.getElementById('btnO1').innerText = "Không có dữ liệu";
+    document.getElementById('btnO2').innerText = "";
+    return;
+  }
+
+  let word = currentList[currentIndex];
+
+  if(mode === 'en'){
+    // Ô 1: Việt | Ô 2: Anh
+    document.getElementById('btnO1').innerText = word.vi;
+    document.getElementById('btnO2').innerText = showAnswer ? word.en : "";
+  }else{
+    // Ô 1: Anh | Ô 2: Việt
+    document.getElementById('btnO1').innerText = word.en;
+    document.getElementById('btnO2').innerText = showAnswer ? word.vi : "";
+  }
+
+  document.getElementById('btnO3').innerText =
+    `Còn ${currentList.length - currentIndex - 1} từ`;
+}
+
+// 👉 Nút Next
+function nextWord(){
+  if(currentList.length === 0) return;
+
+  if(!showAnswer){
+    showAnswer = true; // hiện đáp án
+  }else{
+    if(currentIndex < currentList.length - 1){
+      currentIndex++;
+      showAnswer = false; // sang từ mới thì ẩn lại
+    }
+  }
+
+  renderWord();
+}
+
+// 👉 Nút Anh
+function showEnglish(){
+  mode = 'en';
+
+  currentIndex = 0;     // 🔥 reset về từ đầu
+  showAnswer = false;  // 🔥 ẩn đáp án
+
+  document.getElementById('btnAnh').classList.add('active');
+  document.getElementById('btnViet').classList.remove('active');
+
+  renderWord();
+}
+
+// 👉 Nút Việt
+function showVietnamese(){
+  mode = 'vi';
+
+  currentIndex = 0;     // 🔥 reset về từ đầu
+  showAnswer = false;  // 🔥 ẩn đáp án
+
+  document.getElementById('btnViet').classList.add('active');
+  document.getElementById('btnAnh').classList.remove('active');
+
+  renderWord();
+}
+
+// 👉 Khởi tạo ban đầu (rất quan trọng)
+showEnglish();
+
+function shuffleArray(array){
+  for(let i = array.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+</script>
 </body>
 </html>
 
