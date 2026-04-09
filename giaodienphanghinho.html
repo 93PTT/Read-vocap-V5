@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghinho</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+
+<style>
+	*{box-sizing:border-box;}
+	body{
+		margin:0;
+		font-family:'Poppins', sans-serif;
+		background:snow;
+		overflow: hidden;
+	}
+
+
+
+
+	.app-container{
+		max-width:375px;
+		margin:auto;
+		min-height:100vh;
+		display:flex;
+		flex-direction:column;
+		padding:10px;
+	}
+
+
+
+	.card-1{
+		width: 300px;
+		height:400px;
+		margin:30px auto;
+		background:lightslategray;
+		border-radius:20px;
+		padding:4px;
+		box-shadow:0 20px 50px rgba(0,0,0,0.38);
+	}
+
+
+
+	.card-2{
+		width: 300px;
+		height:50px;
+		margin:50px auto;
+		background:white;
+		border-radius:20px;
+		padding:4px;
+		display: flex;
+		justify-content: center;
+		box-shadow:0 20px 50px rgba(0,0,0,0.38);
+
+		
+	}
+
+
+
+
+	.box-1{
+		width:260px;
+		height:100px;
+		margin:auto;
+		margin-top:10px;
+		border-radius:20px;
+		background:white;
+		display:flex;
+		align-items:center;
+		font-size:16px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		cursor:pointer;
+		transition:0.2s;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+	}
+
+
+
+	.box-2{
+		border:none;
+		outline:none;
+		padding:10px;
+		width: 250px;
+		height: 40px;
+		margin:10px auto;
+		margin-top:50px;
+		border-radius:10px;
+		background:white;
+		display:flex;
+		align-items:center;
+		font-size:15px;
+		font-weight:500;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+	}
+
+
+
+
+	.box-3{
+		width:100px;
+		height:35px;
+		margin-top:20px;
+		margin-left:180px;
+		border-radius:10px;
+		background:transparent;
+		display:flex;
+		align-items:center;
+		font-size:13px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.18);
+	}
+
+
+	.box-4{
+		width:250px;
+		height:35px;
+		margin:auto;
+		margin-top:10px;
+		border-radius:10px;
+		background:transparent;
+		display:flex;
+		align-items:center;
+		font-size:13px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+	}
+
+
+
+
+
+	.grid-1{
+		display:grid;
+		grid-template-columns:1fr 1fr 1fr;
+		gap:15px;
+	}
+
+
+	.button-1{
+		border: none;
+		outline: none;
+		background: none;
+		width: 75px;
+		height: 30px;
+		border-radius:10px;
+		margin:auto;
+		margin-left:10px;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+		background:lightslategray;
+		font-size:13px;
+		font-weight:550;
+		color:#555555;
+		box-shadow:0 8px 20px rgba(0,0,0,0.38);
+		cursor:pointer;
+		transition:0.2s;
+	}
+	
+	.button-1:hover{ background:white; }
+	.button-1:active{transform:scale(0.95);}
+
+
+
+	.grid-2{
+		display:grid;
+		grid-template-columns:1fr 1fr;
+		gap:5px;
+	}
+
+
+
+	.button-2{
+		border: none;
+		outline: none;
+		background: none;
+		width: 75px;
+		height: 30px;
+		border-radius:10px;
+		margin-top:10px;
+		margin-left:10px;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+		background:lightslategray;
+		font-size:13px;
+		font-weight:550;
+		color:#555555;
+		box-shadow:0 8px 20px rgba(0,0,0,0.38);
+		cursor:pointer;
+		transition:0.2s;
+	}
+	
+	.button-2:hover{ background:white; }
+	.button-2:active{transform:scale(0.95);}
+
+
+	
+
+</style>
+</head>
+
+
+
+
+
+<body>
+	<div class="app-container">
+		<div class="card-1">
+			<div class="grid-2">
+    				<button class="button-1">Anh</button>
+    				<button class="button-1">Việt</button>
+		</div>
+			<div class="box box-3" id="btnO3">Từ còn lại</div>
+			<div class="box box-1" id="btnO1">Ô 1</div>
+			<textarea class="box box-2" id="btnO2" placeholder="Nhập chữ..."></textarea>
+			<div class="box box-4" id="btnO4">Phiên âm</div>
+		</div>
+
+		<div class="card-2 grid-1">
+    			<button class="button-1">Back</button>
+    			<button class="button-1">Phát âm</button>
+    			<button class="button-1">Next</button>
+		</div>
+	</div>
+
+	
+</body>
+</html>
+
+		
+
+
