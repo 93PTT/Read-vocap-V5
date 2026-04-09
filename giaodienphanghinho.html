@@ -19,7 +19,18 @@
 		overflow: hidden;
 	}
 
+.header{
+	text-align:center;
+	margin-top:10px;
+}
 
+
+
+.cat2-img{
+	width:12%;
+	max-width:280px;
+	border-radius:20px;
+}
 
 
 	.app-container{
@@ -34,11 +45,11 @@
 
 
 	.card-1{
-		width: 300px;
-		height:400px;
-		margin:30px auto;
+		width: 350px;
+		height:360px;
+		margin:10px auto;
 		background:lightslategray;
-		border-radius:20px;
+		border-radius:30px;
 		padding:4px;
 		box-shadow:0 20px 50px rgba(0,0,0,0.38);
 	}
@@ -46,11 +57,11 @@
 
 
 	.card-2{
-		width: 300px;
-		height:50px;
-		margin:50px auto;
+		width: 350px;
+		height:70px;
+		margin:30px auto;
 		background:lightslategray;
-		border-radius:20px;
+		border-radius:30px;
 		padding:4px;
 		display: flex;
 		justify-content: center;
@@ -63,15 +74,15 @@
 
 
 	.box-1{
-		width:250px;
+		width:300px;
 		height:100px;
 		margin:auto;
-		margin-top:10px;
+		margin-top:20px;
 		border-radius:20px;
 		background:white;
 		display:flex;
 		align-items:center;
-		font-size:16px;
+		font-size:17px;
 		font-weight:600;
 		color:#555555;
 		justify-content:center;
@@ -82,7 +93,7 @@
 
 
 	.box-2{
-		width:250px;
+		width:300px;
 		height: 100px;
 		margin:10px auto;
 		margin-top:30px;
@@ -90,7 +101,7 @@
 		background:white;
 		display:flex;
 		align-items:center;
-		font-size:16px;
+		font-size:17px;
 		font-weight:600;
 		color:#555555;
 		justify-content:center;
@@ -104,13 +115,13 @@
 	.box-3{
 		width:100px;
 		height:35px;
-		margin-top:10px;
-		margin-left:180px;
+		margin-top:-30px;
+		margin-left:240px;
 		border-radius:10px;
 		background:transparent;
 		display:flex;
 		align-items:center;
-		font-size:13px;
+		font-size:15px;
 		font-weight:600;
 		color:#555555;
 		justify-content:center;
@@ -121,12 +132,12 @@
 		width:250px;
 		height:35px;
 		margin:auto;
-		margin-top:20px;
+		margin-top:10px;
 		border-radius:10px;
 		background:transparent;
 		display:flex;
 		align-items:center;
-		font-size:13px;
+		font-size:15px;
 		font-weight:600;
 		color:#555555;
 		justify-content:center;
@@ -148,7 +159,7 @@
 		outline: none;
 		background: none;
 		width: 75px;
-		height: 30px;
+		height: 40px;
 		border-radius:10px;
 		margin:auto;
 		margin-left:10px;
@@ -156,8 +167,8 @@
 		align-items:center;
 		justify-content:center;
 		background:whitesmoke;
-		font-size:13px;
-		font-weight:550;
+		font-size:16px;
+		font-weight:600;
 		color:#555555;
 		box-shadow:0 8px 20px rgba(0,0,0,0.38);
 		cursor:pointer;
@@ -182,8 +193,8 @@
 		border: none;
 		outline: none;
 		background: none;
-		width: 50px;
-		height: 30px;
+		width: 60px;
+		height: 40px;
 		border-radius:10px;
 		margin-top:10px;
 		margin-left:10px;
@@ -191,7 +202,7 @@
 		align-items:center;
 		justify-content:center;
 		background:whitesmoke;
-		font-size:13px;
+		font-size:16px;
 		font-weight:550;
 		color:#555555;
 		box-shadow:0 8px 20px rgba(0,0,0,0.38);
@@ -217,6 +228,10 @@
 
 
 <body>
+	<div class="header">
+		<img src="cat2.png" class="cat2-img">
+	</div>
+
 	<div class="app-container">
 		<div class="card-1">
 			<div class="grid-2">
@@ -295,12 +310,15 @@
     	if(currentIndex < currentList.length - 1){
       	currentIndex++;
       	showAnswer = false; // sang từ mới thì ẩn lại
+    	} else {
+      	// Hết danh sách → bắn pháo hoa
+      	launchFireworks();
+      	return; // không tăng nữa
     	}
   	}
 
   	renderWord();
 	}
-
 	// Nút Anh
 	function showEnglish(){
   	mode = 'en';
@@ -381,6 +399,7 @@
 
   	renderWord();
 	}
+
 
 </script>
 </body>
