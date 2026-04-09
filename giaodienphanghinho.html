@@ -228,8 +228,8 @@
 		</div>
 
 		<div class="card-2 grid-1">
-    			<button class="button-1">Back</button>
-    			<button class="button-1">Phát âm</button>
+    			<button class="button-1" onclick="backWord()">Back</button>
+    			<button class="button-1" onclick="speakWord()">Phát âm</button>
     			<button class="button-1" onclick="nextWord()">Next</button>
 		</div>
 	</div>
@@ -238,89 +238,147 @@
 
 
 <script>
-let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
-let currentList = allLists[0]?.words || [];
-shuffleArray(currentList);
+	let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+	let currentList = allLists[0]?.words || [];
+	shuffleArray(currentList);
 
-let currentIndex = 0;
-let mode = 'en'; // mặc định nút Anh sáng
-let showAnswer = false; // ẩn Ô 2 lúc đầu
+	let currentIndex = 0;
+	let mode = 'en'; // mặc định nút Anh sáng
+	let showAnswer = false; // ẩn Ô 2 lúc đầu
 
-// 👉 Hiển thị từ
-function renderWord(){
-  if(currentList.length === 0){
-    document.getElementById('btnO1').innerText = "Không có dữ liệu";
-    document.getElementById('btnO2').innerText = "";
-    return;
-  }
+	// Hiển thị từ
+	async function renderWord(){
+  	if(currentList.length === 0){
+    	document.getElementById('btnO1').innerText = "Không có dữ liệu";
+    	document.getElementById('btnO2').innerText = "";
+    	return;
+  	}
 
-  let word = currentList[currentIndex];
+  	let word = currentList[currentIndex];
 
-  if(mode === 'en'){
-    // Ô 1: Việt | Ô 2: Anh
-    document.getElementById('btnO1').innerText = word.vi;
-    document.getElementById('btnO2').innerText = showAnswer ? word.en : "";
-  }else{
-    // Ô 1: Anh | Ô 2: Việt
-    document.getElementById('btnO1').innerText = word.en;
-    document.getElementById('btnO2').innerText = showAnswer ? word.vi : "";
-  }
+  	if(mode === 'en'){
+    	// Ô 1: Việt | Ô 2: Anh
+    	document.getElementById('btnO1').innerText = word.vi;
+    	document.getElementById('btnO2').innerText = showAnswer ? word.en : "";
+  	}else{
+    	// Ô 1: Anh | Ô 2: Việt
+    	document.getElementById('btnO1').innerText = word.en;
+    	document.getElementById('btnO2').innerText = showAnswer ? word.vi : "";
+  	}
 
-  document.getElementById('btnO3').innerText =
-    `Còn ${currentList.length - currentIndex - 1} từ`;
-}
+	// XỬ LÝ PHIÊN ÂM
+	let ipa = await getIPA(word.en);
+	let ipaText = "";
 
-// 👉 Nút Next
-function nextWord(){
-  if(currentList.length === 0) return;
+	if(mode === 'en'){
+  	ipaText = showAnswer ? ipa : "";
+	}else{
+  	ipaText = ipa;
+	}
 
-  if(!showAnswer){
-    showAnswer = true; // hiện đáp án
-  }else{
-    if(currentIndex < currentList.length - 1){
-      currentIndex++;
-      showAnswer = false; // sang từ mới thì ẩn lại
-    }
-  }
+	document.getElementById('btnO4').innerText = ipaText;
 
-  renderWord();
-}
 
-// 👉 Nút Anh
-function showEnglish(){
-  mode = 'en';
+  	document.getElementById('btnO3').innerText =
+    	`Còn ${currentList.length - currentIndex - 1} từ`;
+	}
 
-  currentIndex = 0;     // 🔥 reset về từ đầu
-  showAnswer = false;  // 🔥 ẩn đáp án
+	// Nút Next
+	function nextWord(){
+  	if(currentList.length === 0) return;
 
-  document.getElementById('btnAnh').classList.add('active');
-  document.getElementById('btnViet').classList.remove('active');
+  	if(!showAnswer){
+    	showAnswer = true; // hiện đáp án
+  	}else{
+    	if(currentIndex < currentList.length - 1){
+      	currentIndex++;
+      	showAnswer = false; // sang từ mới thì ẩn lại
+    	}
+  	}
 
-  renderWord();
-}
+  	renderWord();
+	}
 
-// 👉 Nút Việt
-function showVietnamese(){
-  mode = 'vi';
+	// Nút Anh
+	function showEnglish(){
+  	mode = 'en';
 
-  currentIndex = 0;     // 🔥 reset về từ đầu
-  showAnswer = false;  // 🔥 ẩn đáp án
+  	currentIndex = 0;     // reset về từ đầu
+  	showAnswer = false;  // ẩn đáp án
 
-  document.getElementById('btnViet').classList.add('active');
-  document.getElementById('btnAnh').classList.remove('active');
+  	document.getElementById('btnAnh').classList.add('active');
+  	document.getElementById('btnViet').classList.remove('active');
 
-  renderWord();
-}
+  	renderWord();
+	}
 
-// 👉 Khởi tạo ban đầu (rất quan trọng)
-showEnglish();
+	// Nút Việt
+	function showVietnamese(){
+  	mode = 'vi';
 
-function shuffleArray(array){
-  for(let i = array.length - 1; i > 0; i--){
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
+  	currentIndex = 0;     // reset về từ đầu
+  	showAnswer = false;  // ẩn đáp án
+
+  	document.getElementById('btnViet').classList.add('active');
+  	document.getElementById('btnAnh').classList.remove('active');
+
+  	renderWord();
+	}
+
+	// Khởi tạo ban đầu (rất quan trọng)
+	showEnglish();
+
+	function shuffleArray(array){
+  	for(let i = array.length - 1; i > 0; i--){
+    	let j = Math.floor(Math.random() * (i + 1));
+    	[array[i], array[j]] = [array[j], array[i]];
+  	}
+	}
+
+	function speakWord(){
+  	if(currentList.length === 0) return;
+
+  	let word = currentList[currentIndex].en; // luôn lấy tiếng Anh
+
+  	let utterance = new SpeechSynthesisUtterance(word);
+  	utterance.lang = 'en-US'; // giọng tiếng Anh
+
+  	speechSynthesis.speak(utterance);
+	}
+
+	async function getIPA(word){
+  	try{
+    	let res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    	let data = await res.json();
+
+    	if(data[0].phonetics){
+      	for(let p of data[0].phonetics){
+        if(p.text) return p.text;
+      	}
+    	}
+
+    	return "";
+  	}catch(e){
+    	return "";
+  	}
+	}
+
+	function backWord() {
+  	if(currentList.length === 0) return;
+
+  	if(showAnswer) {
+    	// Nếu đang hiển thị đáp án → chỉ ẩn đáp án
+    	showAnswer = false;
+  	} else {
+    	// Nếu đáp án đang ẩn → lùi về từ trước nếu có
+    	if(currentIndex > 0){
+      	currentIndex--;
+      	showAnswer = true; // hiện đáp án luôn khi lùi
+    	}
+  	}
+
+  	renderWord();
+	}
 
 </script>
 </body>
