@@ -124,30 +124,34 @@ audio.style.display = "none";
 document.body.appendChild(audio);
 
 
-// ===== PROXY TTS (FIX BỊ CHẶN) =====
-// dùng allorigins để proxy request
-function getTTSUrl(text, lang){
-  const googleUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
+// ===== FETCH AUDIO → BLOB =====
+async function getAudioBlob(text, lang){
+  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
   
-  return "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleUrl);
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
 }
 
 
 // ===== PLAY AUDIO =====
-function playAudio(text, lang){
-  return new Promise((resolve) => {
-    const url = getTTSUrl(text, lang);
+async function playAudio(text, lang){
+  try{
+    const blobUrl = await getAudioBlob(text, lang);
 
-    audio.src = url;
-    audio.load();
+    return new Promise((resolve) => {
+      audio.src = blobUrl;
+      audio.onended = () => {
+        URL.revokeObjectURL(blobUrl);
+        resolve();
+      };
 
-    audio.onended = resolve;
-
-    audio.play().catch(() => {
-      console.log("Audio bị chặn");
-      resolve();
+      audio.play().catch(() => resolve());
     });
-  });
+
+  }catch(e){
+    console.log("Lỗi audio:", e);
+  }
 }
 
 
@@ -206,8 +210,7 @@ document.querySelector('.card-1').addEventListener("click", async () => {
   if (!isStarted){
     isStarted = true;
 
-    // unlock audio cho iPhone
-    audio.src = "";
+    // unlock audio (bắt buộc iPhone)
     await audio.play().catch(()=>{});
 
     playLoop();
