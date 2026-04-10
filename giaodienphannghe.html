@@ -118,170 +118,149 @@
 
 
 <script>
+	const API = "https://tts.thanhtam-phan1993.workers.dev";
+	let selectedList = { words: [] };
+	let audioQueue = [];
+	let index = 0;
+	let isRunning = false;
+	const box2 = document.getElementById("box-2");
 
-// =====================
-// CONFIG
-// =====================
-const API = "https://tts.thanhtam-phan1993.workers.dev";
+	function loadData(){
+  	try {
+    	const raw = localStorage.getItem("selectedList");
 
-// =====================
-// STATE
-// =====================
-let selectedList = { words: [] };
-let audioQueue = [];   // 🔥 cache audio
-let index = 0;
-let isRunning = false;
-
-// =====================
-// UI
-// =====================
-const box2 = document.getElementById("box-2");
-
-// =====================
-// LOAD DATA
-// =====================
-function loadData(){
-  try {
-    const raw = localStorage.getItem("selectedList");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed?.words?.length) {
+    	if (raw) {
+      	const parsed = JSON.parse(raw);
+      	if (parsed?.words?.length) {
         selectedList = parsed;
-      }
-    }
-  } catch(e){
-    console.log(e);
-  }
+      	}
+    	}
+  	} catch(e){
+    	console.log("LOAD ERROR:", e);
+  	}
 
-  if (!selectedList.words.length) {
-    box2.textContent = "KHÔNG CÓ DỮ LIỆU";
-  }
-}
+  	if (!selectedList.words.length) {
+    	box2.textContent = "Không có dữ liệu";
+  	}
+	}
 
-// =====================
-// CREATE AUDIO URL
-// =====================
-function createUrl(text, lang){
-  return `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
-}
+	function shuffle(arr){
+  	for (let i = arr.length - 1; i > 0; i--) {
+    	let j = Math.floor(Math.random() * (i + 1));
+    	[arr[i], arr[j]] = [arr[j], arr[i]];
+  	}
+	}
 
-// =====================
-// PRELOAD AUDIO (QUAN TRỌNG)
-// =====================
-async function preloadAudio(){
 
-  box2.textContent = "ĐANG LOAD AUDIO...";
+	function createUrl(text, lang){
+  	return `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
+	}
 
-  audioQueue = [];
 
-  for (let i = 0; i < selectedList.words.length; i++){
+	async function preloadAudio(){
 
-    const w = selectedList.words[i];
+  	box2.textContent = "Loading...";
 
-    // VI
-    const vi = new Audio(createUrl(w.vi, "vi"));
-    vi.preload = "auto";
+  	audioQueue = [];
 
-    // EN
-    const en = new Audio(createUrl(w.en, "en"));
-    en.preload = "auto";
+  	for (let i = 0; i < selectedList.words.length; i++){
 
-    audioQueue.push({
-      vi,
-      en,
-      text: w.en
-    });
+    	const w = selectedList.words[i];
 
-    box2.textContent = `LOAD: ${i+1}/${selectedList.words.length}`;
+    	const vi = new Audio(createUrl(w.vi, "vi"));
+    	const en = new Audio(createUrl(w.en, "en"));
 
-    // delay nhẹ để iPhone không bị nghẽn
-    await new Promise(r => setTimeout(r, 80));
-  }
+    	vi.preload = "auto";
+    	en.preload = "auto";
 
-  box2.textContent = "LOAD XONG - TAP ĐỂ BẮT ĐẦU";
-}
+    	audioQueue.push({
+      	vi,
+      	en,
+      	text: w.en
+    	});
 
-// =====================
-// PLAY AUDIO SAFE
-// =====================
-function play(audio){
-  return new Promise(resolve=>{
-    audio.currentTime = 0;
+    	box2.textContent = `Loading ${i+1}/${selectedList.words.length}`;
 
-    const p = audio.play();
+    	await new Promise(r => setTimeout(r, 80));
+  	}
 
-    if (p && p.catch){
-      p.catch(()=>resolve());
-    }
+  	box2.textContent = "Start";
+	}
 
-    audio.onended = ()=> resolve();
-    audio.onerror = ()=> resolve();
-  });
-}
 
-// =====================
-// RUN LOOP
-// =====================
-async function run(){
+	function play(audio){
+  	return new Promise(resolve => {
 
-  if (!audioQueue.length) return;
+    	audio.currentTime = 0;
 
-  isRunning = true;
+    	const p = audio.play();
 
-  while(index < audioQueue.length && isRunning){
+    	if (p && p.catch){
+      	p.catch(()=>resolve());
+    	}
 
-    const item = audioQueue[index];
+    	audio.onended = ()=> resolve();
+    	audio.onerror = ()=> resolve();
+  	});
+	}
 
-    box2.textContent = `${index+1}/${audioQueue.length} - ${item.text}`;
+	async function run(){
 
-    // VI
-    await play(item.vi);
-    await new Promise(r => setTimeout(r, 200));
+  	if (!audioQueue.length) return;
 
-    // EN
-    await play(item.en);
-    await new Promise(r => setTimeout(r, 500));
+  	isRunning = true;
 
-    index++;
-  }
+  	while(index < audioQueue.length && isRunning){
 
-  box2.textContent = "FINISH";
+    	const item = audioQueue[index];
 
-  isRunning = false;
-  index = 0;
-}
+    	box2.textContent = item.text;
 
-// =====================
-// START
-// =====================
-async function start(){
 
-  if (isRunning) return;
+    	await play(item.vi);
+    	await new Promise(r => setTimeout(r, 200));
 
-  await run();
-}
 
-// =====================
-// INIT (iPhone SAFE FLOW)
-// =====================
-async function init(){
+    	await play(item.en);
+    	await new Promise(r => setTimeout(r, 500));
 
-  loadData();
+    	index++;
+  	}
 
-  await preloadAudio(); // 🔥 QUAN TRỌNG NHẤT
+  	box2.textContent = "FINISH";
 
-  function startOnce(){
-    document.removeEventListener("click", startOnce);
-    document.removeEventListener("touchstart", startOnce);
+  	isRunning = false;
+  	index = 0;
+	}
 
-    start();
-  }
+	async function start(){
 
-  document.addEventListener("click", startOnce);
-  document.addEventListener("touchstart", startOnce);
-}
+  	if (isRunning) return;
 
-init();
+  	await run();
+	}
+
+
+	async function init(){
+
+  	loadData();
+
+  	shuffle(selectedList.words);
+
+  	await preloadAudio();
+
+  	function startOnce(){
+    	document.removeEventListener("click", startOnce);
+    	document.removeEventListener("touchstart", startOnce);
+
+    	start();
+  	}
+
+  	document.addEventListener("click", startOnce);
+  	document.addEventListener("touchstart", startOnce);
+	}
+
+	init();
 </script>
 </body>
 </html>
