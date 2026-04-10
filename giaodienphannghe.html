@@ -118,28 +118,27 @@
 
 
 <script>
-// ===== AUDIO ELEMENT (fix iPhone) =====
+// ===== AUDIO ELEMENT =====
 let audio = document.createElement("audio");
 audio.style.display = "none";
 document.body.appendChild(audio);
 
 
-// ===== GOOGLE TTS (ổn định hơn cho iOS) =====
-function speak(text, lang, callback){
-  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
+// ===== PLAY AUDIO (PROMISE) =====
+function playAudio(text, lang){
+  return new Promise((resolve) => {
+    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
 
-  audio.src = url;
-  audio.load();
+    audio.src = url;
+    audio.load();
 
-  audio.onended = callback;
+    audio.onended = resolve;
 
-  let playPromise = audio.play();
-
-  if (playPromise !== undefined){
-    playPromise.catch(() => {
-      console.log("Audio bị chặn, cần user click");
+    audio.play().catch(() => {
+      console.log("iPhone chặn audio");
+      resolve();
     });
-  }
+  });
 }
 
 
@@ -161,7 +160,6 @@ if (!selectedList || !selectedList.words){
   throw new Error("No data");
 }
 
-// random từ
 shuffleArray(selectedList.words);
 
 
@@ -170,45 +168,42 @@ let index = 0;
 let isStarted = false;
 
 
-// ===== PLAY WORD =====
-function playWord(){
-  if (index >= selectedList.words.length){
-    box2.textContent = "FINISH";
-    return;
+// ===== PLAY LOOP (ASYNC) =====
+async function playLoop(){
+  while (index < selectedList.words.length){
+    let word = selectedList.words[index];
+
+    box2.textContent = word.en;
+
+    // tiếng Việt
+    await playAudio(word.vi, "vi");
+
+    // delay
+    await new Promise(r => setTimeout(r, 500));
+
+    // tiếng Anh
+    await playAudio(word.en, "en");
+
+    // delay
+    await new Promise(r => setTimeout(r, 1500));
+
+    index++;
   }
 
-  let word = selectedList.words[index];
-
-  // hiện subtitle
-  box2.textContent = word.en;
-
-  // ===== TIẾNG VIỆT =====
-  speak(word.vi, "vi", () => {
-
-    setTimeout(() => {
-
-      // ===== TIẾNG ANH =====
-      speak(word.en, "en", () => {
-        index++;
-        setTimeout(playWord, 1500);
-      });
-
-    }, 500);
-
-  });
+  box2.textContent = "FINISH";
 }
 
 
 // ===== CLICK START =====
-document.querySelector('.card-1').addEventListener("click", () => {
+document.querySelector('.card-1').addEventListener("click", async () => {
   if (!isStarted){
     isStarted = true;
 
-    // reset audio tránh bug iOS
-    audio.pause();
-    audio.currentTime = 0;
+    // 🔥 UNLOCK AUDIO (quan trọng nhất)
+    audio.src = "";
+    await audio.play().catch(()=>{});
 
-    playWord();
+    playLoop();
   }
 });
 </script>
