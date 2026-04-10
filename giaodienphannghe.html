@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nghe</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
+
+
+<style>
+	*{box-sizing:border-box;}
+	body{
+		margin:0;
+		font-family:'Poppins', sans-serif;
+		background:snow;
+	}
+
+
+	.app-container{
+		max-width:375px;
+		margin:auto;
+		min-height:100vh;
+		display:flex;
+		flex-direction:column;
+		padding:10px;
+	}
+
+
+
+	.card-1{
+		width: 350px;
+		height:600px;
+		border-radius: 20px;
+		margin:auto;
+		background-image: url("cat5.png");
+    		background-size: cover;
+    		background-position: center;
+		background-repeat: no-repeat;
+		box-shadow:0 20px 50px rgba(0,0,0,0.38);
+	}
+
+
+
+	.cat5-img{
+    		width: 100%;
+    		height: 100%;
+    		object-fit: cover;
+	}
+
+
+
+
+	.box-1 {
+  		width:170px;
+		height:70px;
+		margin:auto;
+		margin-top:100px;
+		border-radius:20px;
+		background:transparent;
+		display:flex;
+		align-items:center;
+		font-size:17px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
+	}
+
+
+
+	.box-2 {
+  		width:300px;
+		height:100px;
+		margin:auto;
+		margin-top:200px;
+		border-radius:20px;
+		background:transparent;
+		display:flex;
+		align-items:center;
+		font-size:17px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
+	}
+
+
+	.gif{
+		width:200%;
+		height:200%;
+		object-fit:contain;
+	}
+
+	
+
+</style>
+</head>
+
+
+
+
+
+<body>
+	<div class="app-container">
+		<div class="card-1">
+			<div class="box-1">
+				<img src="audio.gif" class="gif">
+			</div>
+			<div class="box-2" id="box-2"></div>
+		</div>
+	</div>
+
+
+<script>
+	function shuffleArray(array){
+		for (let i = array.length - 1; i > 0; i--){
+		let j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+		}
+	}
+
+	let selectedList = JSON.parse(localStorage.getItem('selectedList'));
+	const box2 = document.getElementById('box-2');
+	if (!selectedList || !selectedList.words) {
+	box2.textContent = "Không có dữ liệu";
+	}
+
+
+	if (selectedList && selectedList.words){
+	shuffleArray(selectedList.words);
+	}
+	let index = 0;
+	let isStarted = false;
+
+
+	let audio = new Audio();
+
+
+	function getAudioURL(text, lang){
+	return `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=tw-ob`;
+	}
+
+
+
+	function playWord(){
+
+	if (index >= selectedList.words.length){
+		box2.textContent = "FINISH";
+		return;
+	}
+
+	let word = selectedList.words[index];
+
+	// hiện subtitle
+	box2.textContent = word.en;
+
+	// --- đọc tiếng Việt ---
+	audio.src = getAudioURL(word.vi, "vi");
+	audio.play();
+
+	audio.onended = () => {
+
+		setTimeout(() => {
+
+			// --- đọc tiếng Anh ---
+			audio.src = getAudioURL(word.en, "en");
+			audio.play();
+
+			audio.onended = () => {
+				index++;
+				setTimeout(playWord, 1500);
+			};
+
+		}, 500);
+	};
+	}
+
+
+
+	document.body.addEventListener("click", () => {
+	if (!isStarted){
+		isStarted = true;
+		playWord();
+	}
+	});
+</script>
+</body>
+</html>
+
+		
+
+
