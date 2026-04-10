@@ -191,73 +191,47 @@ textarea {
 <script>
 function saveList(){
 
-  const nameEl = document.getElementById('listName');
-  const enEl = document.getElementById('englishWords');
-  const viEl = document.getElementById('vietnameseWords');
+  const name = document.getElementById('listName').value.trim();
+  const en = document.getElementById('englishWords').value.trim().split('\n');
+  const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
 
-  const name = (nameEl?.value || "").trim();
-  const en = (enEl?.value || "").split('\n').map(t=>t.trim()).filter(Boolean);
-  const vi = (viEl?.value || "").split('\n').map(t=>t.trim()).filter(Boolean);
-
-  // ❗ validate chắc chắn
   if(!name){
-    alert("Chưa nhập tên danh sách");
+    alert("no name");
     return;
   }
 
-  if(en.length === 0 || vi.length === 0){
-    alert("Danh sách trống");
-    return;
-  }
-
-  if(en.length !== vi.length){
-    alert("Số dòng Anh - Việt không khớp");
-    return;
-  }
-
-  // 🔥 build data an toàn 100%
-  const words = [];
+  let words = [];
 
   for(let i=0;i<en.length;i++){
     words.push({
       en: en[i],
       vi: vi[i],
 
-      // tạm thời dùng text-only (ổn định trước)
-      enUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(en[i])}&tl=en&client=tw-ob`,
-      viUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(vi[i])}&tl=vi&client=tw-ob`
+      enUrl: "https://example.com/audio.mp3", // tạm test
+      viUrl: "https://example.com/audio.mp3"
     });
   }
 
-  // 🔥 READ OLD DATA SAFELY
-  let allLists = [];
+  let all = [];
+
   try {
-    const raw = localStorage.getItem("wordLists");
-    allLists = raw ? JSON.parse(raw) : [];
-    if(!Array.isArray(allLists)) allLists = [];
+    all = JSON.parse(localStorage.getItem("wordLists") || "[]");
   } catch(e){
-    allLists = [];
+    all = [];
   }
 
-  // 🔥 PUSH NEW LIST
-  allLists.push({
-    id: Date.now(),
-    name: name,
-    words: words
+  all.push({
+    name,
+    words
   });
 
-  // 🔥 SAVE
-  localStorage.setItem("wordLists", JSON.stringify(allLists));
+  localStorage.setItem("wordLists", JSON.stringify(all));
 
-  console.log("Saved:", allLists);
+  alert("saved ok");
 
-  alert("Đã lưu danh sách!");
-
-  // optional redirect
-  // window.location.href = "index.html";
+  console.log(all);
 }
 </script>
-
 
 
 </body>
