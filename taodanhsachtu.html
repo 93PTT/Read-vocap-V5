@@ -189,31 +189,7 @@ textarea {
 
 
 <script>
-const API = "https://tts.thanhtam-phan1993.workers.dev";
-
-/* =========================
-   🔊 CONVERT BLOB → BASE64
-========================= */
-function blobToBase64(blob){
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-}
-
-/* =========================
-   🔊 CALL TTS
-========================= */
-async function getAudioBlob(text, lang){
-  const res = await fetch(`${API}?text=${encodeURIComponent(text)}&lang=${lang}`);
-  return await res.blob();
-}
-
-/* =========================
-   💾 SAVE LIST (MAIN LOGIC)
-========================= */
-async function saveList(){
+function saveList(){
 
   const name = document.getElementById('listName').value.trim();
   const en = document.getElementById('englishWords').value.trim().split('\n');
@@ -229,9 +205,7 @@ async function saveList(){
     return;
   }
 
-  const msg = document.getElementById('saveMessage');
-  msg.style.display = 'flex';
-  msg.querySelector('.saved-box').textContent = "⏳ Đang tạo audio...";
+  const API = "https://tts.thanhtam-phan1993.workers.dev";
 
   let result = [];
 
@@ -240,60 +214,32 @@ async function saveList(){
     const wordEn = en[i].trim();
     const wordVi = vi[i].trim();
 
-    try {
-      // 🔥 tạo audio song song
-      const [enBlob, viBlob] = await Promise.all([
-        getAudioBlob(wordEn, "en"),
-        getAudioBlob(wordVi, "vi")
-      ]);
-
-      result.push({
-        en: wordEn,
-        vi: wordVi,
-
-        // 🔊 dùng base64 để không mất dữ liệu
-        enAudio: await blobToBase64(enBlob),
-        viAudio: await blobToBase64(viBlob)
-      });
-
-      msg.querySelector('.saved-box').textContent =
-        `⏳ Đang xử lý ${i+1}/${en.length}`;
-
-    } catch(e){
-      console.log("TTS ERROR:", e);
-
-      result.push({
-        en: wordEn,
-        vi: wordVi,
-        enAudio: "",
-        viAudio: ""
-      });
-    }
+    // 🔥 CHỈ LƯU TEXT + URL (CHUẨN iOS)
+    result.push({
+      en: wordEn,
+      vi: wordVi,
+      enUrl: `${API}?text=${encodeURIComponent(wordEn)}&lang=en`,
+      viUrl: `${API}?text=${encodeURIComponent(wordVi)}&lang=vi`
+    });
   }
 
-  // =========================
-  // 💾 SAVE TO LOCALSTORAGE
-  // =========================
   let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
 
   allLists.push({
-    name: name,
+    name,
     words: result
   });
 
   localStorage.setItem('wordLists', JSON.stringify(allLists));
 
-  // =========================
-  // ✅ DONE
-  // =========================
-  msg.querySelector('.saved-box').textContent = "✅ Lưu xong!";
+  const msg = document.getElementById('saveMessage');
+  msg.style.display = 'flex';
 
   setTimeout(() => {
     window.location.href = "index.html";
   }, 1200);
 }
 </script>
-
 
 </body>
 </html>
