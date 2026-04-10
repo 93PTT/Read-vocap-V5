@@ -122,20 +122,30 @@ const box2 = document.getElementById("box-2");
 
 let list = [];
 let index = 0;
-let audio = new Audio();
+let audio;
 
 /* =========================
-   LOAD (FIX 100%)
+   DEBUG LOG
+========================= */
+function log(msg){
+  console.log("[APP]", msg);
+}
+
+/* =========================
+   LOAD DATA (SAFE)
 ========================= */
 function loadData(){
-
-  try{
+  try {
     const raw = localStorage.getItem("wordLists");
 
-    const all = raw ? JSON.parse(raw) : [];
+    log("raw data: " + raw);
+
+    const all = JSON.parse(raw || "[]");
+
+    log("parsed lists: " + all.length);
 
     if(!Array.isArray(all) || all.length === 0){
-      box2.textContent = "Không có dữ liệu";
+      box2.textContent = "NO DATA";
       return;
     }
 
@@ -143,61 +153,90 @@ function loadData(){
 
     list = last.words || [];
 
-    console.log("Loaded list:", last);
+    log("words loaded: " + list.length);
 
-  }catch(e){
+  } catch(e){
     console.log("LOAD ERROR", e);
-    list = [];
+    box2.textContent = "LOAD ERROR";
   }
 }
 
 /* =========================
-   PLAY SAFE
+   PLAY AUDIO SAFE
 ========================= */
 function play(url){
-  return new Promise(res=>{
+  return new Promise(resolve => {
+
+    if(!audio){
+      audio = new Audio();
+    }
+
     audio.pause();
     audio.src = url;
     audio.load();
 
     const p = audio.play();
-    if(p && p.catch) p.catch(()=>res());
 
-    audio.onended = res;
-    audio.onerror = res;
+    if(p && p.catch){
+      p.catch(err=>{
+        log("audio blocked");
+        resolve();
+      });
+    }
+
+    audio.onended = resolve;
+    audio.onerror = resolve;
   });
 }
 
 /* =========================
-   RUN
+   RUN LOOP (FORCED UI UPDATE)
 ========================= */
 async function run(){
 
-  if(!list.length) return;
+  if(!list.length){
+    box2.textContent = "EMPTY LIST";
+    return;
+  }
+
+  log("START RUN");
 
   while(index < list.length){
 
     const item = list[index];
 
-    box2.textContent = item.en;
+    // 🔥 PHỤ ĐỀ LUÔN LUÔN CHẠY
+    box2.textContent = item.en || "NO TEXT";
 
-    await play(item.enUrl);
+    log("show: " + item.en);
+
+    // audio không quan trọng nữa
+    if(item.enUrl){
+      await play(item.enUrl);
+    }
+
     await new Promise(r=>setTimeout(r,200));
 
-    await play(item.viUrl);
+    if(item.viUrl){
+      await play(item.viUrl);
+    }
+
     await new Promise(r=>setTimeout(r,400));
 
     index++;
   }
 
   box2.textContent = "FINISH";
-  index = 0;
+  log("DONE");
 }
 
 /* =========================
-   START
+   START SAFE (IOS FIX)
 ========================= */
 function start(){
+
+  log("CLICK START");
+
   run();
 }
 
@@ -205,13 +244,17 @@ function start(){
    INIT
 ========================= */
 function init(){
+
+  log("INIT APP");
+
   loadData();
+
   document.addEventListener("click", start, {once:true});
+  document.addEventListener("touchstart", start, {once:true});
 }
 
 init();
 </script>
-
 
 </body>
 </html>
