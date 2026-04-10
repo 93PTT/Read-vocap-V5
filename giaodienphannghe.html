@@ -124,10 +124,19 @@ audio.style.display = "none";
 document.body.appendChild(audio);
 
 
-// ===== PLAY AUDIO (PROMISE) =====
+// ===== PROXY TTS (FIX BỊ CHẶN) =====
+// dùng allorigins để proxy request
+function getTTSUrl(text, lang){
+  const googleUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
+  
+  return "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleUrl);
+}
+
+
+// ===== PLAY AUDIO =====
 function playAudio(text, lang){
   return new Promise((resolve) => {
-    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
+    const url = getTTSUrl(text, lang);
 
     audio.src = url;
     audio.load();
@@ -135,7 +144,7 @@ function playAudio(text, lang){
     audio.onended = resolve;
 
     audio.play().catch(() => {
-      console.log("iPhone chặn audio");
+      console.log("Audio bị chặn");
       resolve();
     });
   });
@@ -168,7 +177,7 @@ let index = 0;
 let isStarted = false;
 
 
-// ===== PLAY LOOP (ASYNC) =====
+// ===== PLAY LOOP =====
 async function playLoop(){
   while (index < selectedList.words.length){
     let word = selectedList.words[index];
@@ -178,13 +187,11 @@ async function playLoop(){
     // tiếng Việt
     await playAudio(word.vi, "vi");
 
-    // delay
     await new Promise(r => setTimeout(r, 500));
 
     // tiếng Anh
     await playAudio(word.en, "en");
 
-    // delay
     await new Promise(r => setTimeout(r, 1500));
 
     index++;
@@ -199,7 +206,7 @@ document.querySelector('.card-1').addEventListener("click", async () => {
   if (!isStarted){
     isStarted = true;
 
-    // 🔥 UNLOCK AUDIO (quan trọng nhất)
+    // unlock audio cho iPhone
     audio.src = "";
     await audio.play().catch(()=>{});
 
