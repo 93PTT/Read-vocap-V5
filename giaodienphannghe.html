@@ -118,149 +118,132 @@
 
 
 <script>
-	const API = "https://tts.thanhtam-phan1993.workers.dev";
-	let selectedList = { words: [] };
-	let audioQueue = [];
-	let index = 0;
-	let isRunning = false;
-	const box2 = document.getElementById("box-2");
+const box2 = document.getElementById("box-2");
 
-	function loadData(){
-  	try {
-    	const raw = localStorage.getItem("selectedList");
+let audioQueue = [];
+let index = 0;
+let isRunning = false;
 
-    	if (raw) {
-      	const parsed = JSON.parse(raw);
-      	if (parsed?.words?.length) {
+// 👉 data sẽ chứa audio đã lưu (sau này từ IndexedDB hoặc localStorage)
+let selectedList = { words: [] };
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem("selectedList");
+
+    if (raw) {
+      const parsed = JSON.parse(raw);
+
+      // kỳ vọng format mới:
+      // words: [{ en, vi, enAudio, viAudio }]
+      if (parsed?.words?.length) {
         selectedList = parsed;
-      	}
-    	}
-  	} catch(e){
-    	console.log("LOAD ERROR:", e);
-  	}
+      }
+    }
+  } catch (e) {
+    console.log("LOAD ERROR:", e);
+  }
 
-  	if (!selectedList.words.length) {
-    	box2.textContent = "Không có dữ liệu";
-  	}
-	}
+  if (!selectedList.words.length) {
+    box2.textContent = "Không có dữ liệu";
+  }
+}
 
-	function shuffle(arr){
-  	for (let i = arr.length - 1; i > 0; i--) {
-    	let j = Math.floor(Math.random() * (i + 1));
-    	[arr[i], arr[j]] = [arr[j], arr[i]];
-  	}
-	}
+// 👉 shuffle giữ nguyên
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
 
+// 👉 build queue từ DATA ĐÃ CÓ AUDIO
+function buildQueue() {
+  audioQueue = selectedList.words.map(w => ({
+    text: w.en,
+    viUrl: w.viAudio,
+    enUrl: w.enAudio
+  }));
+}
 
-	function createUrl(text, lang){
-  	return `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
-	}
+// 👉 iOS-safe play
+function playUrl(url) {
+  return new Promise(resolve => {
+    const audio = new Audio(url);
 
+    audio.preload = "auto";
+    audio.load();
 
-	async function preloadAudio(){
+    const p = audio.play();
 
-  	box2.textContent = "Loading...";
+    if (p && p.catch) {
+      p.catch(() => resolve());
+    }
 
-  	audioQueue = [];
+    audio.onended = () => resolve();
+    audio.onerror = () => resolve();
+  });
+}
 
-  	for (let i = 0; i < selectedList.words.length; i++){
+async function run() {
+  if (!audioQueue.length) return;
 
-    	const w = selectedList.words[i];
+  isRunning = true;
 
-    	const vi = new Audio(createUrl(w.vi, "vi"));
-    	const en = new Audio(createUrl(w.en, "en"));
+  while (index < audioQueue.length && isRunning) {
+    const item = audioQueue[index];
 
-    	vi.preload = "auto";
-    	en.preload = "auto";
+    box2.textContent = item.text;
 
-    	audioQueue.push({
-      	vi,
-      	en,
-      	text: w.en
-    	});
+    // 🔊 play VI
+    await playUrl(item.viUrl);
+    await new Promise(r => setTimeout(r, 200));
 
-    	box2.textContent = `Loading ${i+1}/${selectedList.words.length}`;
+    // 🔊 play EN
+    await playUrl(item.enUrl);
+    await new Promise(r => setTimeout(r, 500));
 
-    	await new Promise(r => setTimeout(r, 80));
-  	}
+    index++;
+  }
 
-  	box2.textContent = "Start";
-	}
+  box2.textContent = "FINISH";
 
+  isRunning = false;
+  index = 0;
+}
 
-	function play(audio){
-  	return new Promise(resolve => {
+async function start() {
+  if (isRunning) return;
+  run();
+}
 
-    	audio.currentTime = 0;
+// 👉 unlock iOS audio system (rất quan trọng)
+function unlockIOS() {
+  const audio = new Audio();
+  audio.play().catch(() => {});
+}
 
-    	const p = audio.play();
+// 👉 init
+function init() {
+  loadData();
 
-    	if (p && p.catch){
-      	p.catch(()=>resolve());
-    	}
+  shuffle(selectedList.words);
+  buildQueue();
 
-    	audio.onended = ()=> resolve();
-    	audio.onerror = ()=> resolve();
-  	});
-	}
+  function startOnce() {
+    document.removeEventListener("click", startOnce);
+    document.removeEventListener("touchstart", startOnce);
 
-	async function run(){
+    unlockIOS(); // 🔥 mở khóa iOS audio
 
-  	if (!audioQueue.length) return;
+    start();
+  }
 
-  	isRunning = true;
+  document.addEventListener("click", startOnce, { once: true });
+  document.addEventListener("touchstart", startOnce, { once: true });
+}
 
-  	while(index < audioQueue.length && isRunning){
-
-    	const item = audioQueue[index];
-
-    	box2.textContent = item.text;
-
-
-    	await play(item.vi);
-    	await new Promise(r => setTimeout(r, 200));
-
-
-    	await play(item.en);
-    	await new Promise(r => setTimeout(r, 500));
-
-    	index++;
-  	}
-
-  	box2.textContent = "FINISH";
-
-  	isRunning = false;
-  	index = 0;
-	}
-
-	async function start(){
-
-  	if (isRunning) return;
-
-  	await run();
-	}
-
-
-	async function init(){
-
-  	loadData();
-
-  	shuffle(selectedList.words);
-
-  	await preloadAudio();
-
-  	function startOnce(){
-    	document.removeEventListener("click", startOnce);
-    	document.removeEventListener("touchstart", startOnce);
-
-    	start();
-  	}
-
-  	document.addEventListener("click", startOnce);
-  	document.addEventListener("touchstart", startOnce);
-	}
-
-	init();
+init();
 </script>
 </body>
 </html>
