@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ghinho</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
+
+<style>
+	*{box-sizing:border-box;}
+	body{
+		margin:0;
+		font-family:'Poppins', sans-serif;
+		background:snow;
+	}
+
+.header{
+	text-align:center;
+	margin-top:10px;
+}
+
+
+
+.cat2-img{
+	width:100%;
+	max-width:250px;
+	border-radius:20px;
+}
+
+
+	.app-container{
+		max-width:375px;
+		margin:auto;
+		min-height:100vh;
+		display:flex;
+		flex-direction:column;
+		padding:10px;
+	}
+
+
+
+	.card-1{
+		width: 350px;
+		height:360px;
+		margin:-10px auto;
+		background:lightslategray;
+		border-radius:30px;
+		padding:4px;
+		box-shadow:0 20px 50px rgba(0,0,0,0.38);
+	}
+
+
+
+	.card-2{
+		width: 350px;
+		height:70px;
+		margin:50px auto;
+		background:lightslategray;
+		border-radius:30px;
+		padding:4px;
+		display: flex;
+		justify-content: center;
+		box-shadow:0 20px 50px rgba(0,0,0,0.38);
+
+		
+	}
+
+
+
+
+	.box-1{
+		width:300px;
+		height:100px;
+		margin:auto;
+		margin-top:20px;
+		border-radius:20px;
+		background:white;
+		display:flex;
+		align-items:center;
+		font-size:17px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
+	}
+
+
+
+	.box-2{
+		width:300px;
+		height: 100px;
+		margin:10px auto;
+		margin-top:30px;
+		border-radius:20px;
+		background:white;
+		display:flex;
+		align-items:center;
+		font-size:17px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+		box-shadow:0 8px 20px rgba(0,0,0,0.28);
+		text-align: center;
+	}
+
+
+
+
+	.box-3{
+		width:100px;
+		height:35px;
+		margin-top:10px;
+		margin-left:240px;
+		border-radius:10px;
+		background:transparent;
+		display:flex;
+		align-items:center;
+		font-size:15px;
+		font-weight:600;
+		color:#555555;
+		justify-content:center;
+	}
+
+
+
+
+
+	.grid-1{
+		display:grid;
+		grid-template-columns:1fr 1fr 1fr;
+		gap:15px;
+	}
+
+
+	.button-1{
+		border: none;
+		outline: none;
+		background: none;
+		width: 75px;
+		height: 40px;
+		border-radius:15px;
+		margin:auto;
+		margin-left:10px;
+		display:flex;
+		align-items:center;
+		justify-content:center;
+		background:whitesmoke;
+		font-size:16px;
+		font-weight:600;
+		color:#555555;
+		box-shadow:0 8px 20px rgba(0,0,0,0.38);
+		cursor:pointer;
+		transition:0.2s;
+	}
+	
+	.button-1:hover{ background:orange; }
+	.button-1:active{transform:scale(0.95);}
+
+
+
+	.grid-2{
+		display:grid;
+		grid-template-columns:auto auto;
+		gap:5px;
+		justify-content:start;
+	}
+
+
+
+	
+
+</style>
+</head>
+
+
+
+
+
+<body>
+	<div class="header">
+		<img src="cat2.png" class="cat2-img">
+	</div>
+
+	<div class="app-container">
+		<div class="card-1">
+			<div class="box box-3" id="btnO3">Từ còn lại</div>
+			<div class="box box-1" id="btnO1">Ô 1</div>
+			<div id="btnO2" class="box box-2" onclick="speakCurrentWord()"></div>
+		</div>
+
+		<div class="card-2 grid-1">
+    			<button class="button-1" onclick="backWord()">Back</button>
+    			<button class="button-1" onclick="startVoice()">Mic</button>
+    			<button class="button-1" onclick="nextWord()">Next</button>
+		</div>
+	</div>
+
+
+
+<script>
+
+
+
+// =========================
+// LOAD DATA
+// =========================
+let selectedList = JSON.parse(localStorage.getItem('selectedList') || '{}');
+let currentList = selectedList.words || [];
+
+shuffleArray(currentList);
+
+let currentIndex = 0;
+
+
+// =========================
+// INIT
+// =========================
+renderWord();
+
+
+// =========================
+// RENDER
+// =========================
+function renderWord() {
+
+    if (!currentList.length) {
+        document.getElementById('btnO1').innerText = "Không có dữ liệu";
+        document.getElementById('btnO2').innerText = "Bấm 🎤 để bắt đầu";
+        return;
+    }
+
+    let word = currentList[currentIndex];
+
+    document.getElementById('btnO1').innerText = word.vi || "";
+
+    let box = document.getElementById('btnO2');
+    box.innerText = "";
+    box.style.background = "white";
+}
+
+
+// =========================
+// START VOICE
+// =========================
+function startVoice() {
+
+    if (!currentList.length) return;
+
+    let correct = (currentList[currentIndex]?.en || "").toLowerCase().trim();
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Trình duyệt không hỗ trợ voice recognition");
+        return;
+    }
+
+    let recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+
+        let spoken = event.results[0][0].transcript.toLowerCase().trim();
+
+        checkVoice(spoken, correct);
+    };
+
+    recognition.onerror = function() {
+        alert("Không nghe rõ, thử lại");
+    };
+}
+
+
+// =========================
+// CHECK VOICE (FUZZY)
+// =========================
+function checkVoice(spoken, correct) {
+
+    let box = document.getElementById('btnO2');
+
+    box.innerText = "Bạn nói: " + spoken;
+
+    let score = similarity(spoken, correct);
+
+    console.log("SCORE:", score);
+
+    if (score >= 0.75) {
+
+        box.style.background = "#c8f7c5";
+
+        setTimeout(() => {
+            nextWord();
+        }, 500);
+
+    } else {
+
+        box.style.background = "#ffcccc";
+
+        setTimeout(() => {
+            box.innerText = "❌ Sai rồi, thử lại";
+            box.style.background = "white";
+        }, 900);
+    }
+}
+
+
+// =========================
+// SIMILARITY SCORE
+// =========================
+function similarity(a, b) {
+
+    a = a.toLowerCase().trim();
+    b = b.toLowerCase().trim();
+
+    if (a === b) return 1;
+
+    if (a.includes(b) || b.includes(a)) return 0.9;
+
+    let maxLen = Math.max(a.length, b.length);
+    let diff = levenshtein(a, b);
+
+    return 1 - diff / maxLen;
+}
+
+
+// =========================
+// LEVENSHTEIN ALGORITHM
+// =========================
+function levenshtein(a, b) {
+
+    const matrix = [];
+
+    for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+}
+
+
+// =========================
+// NEXT WORD
+// =========================
+function nextWord() {
+
+    currentIndex++;
+
+    if (currentIndex >= currentList.length) {
+        document.getElementById('btnO1').innerText = "🎉 FINISH";
+        document.getElementById('btnO2').innerText = "";
+        return;
+    }
+
+    renderWord();
+}
+
+
+// =========================
+// BACK
+// =========================
+function backWord() {
+
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderWord();
+    }
+}
+
+
+// =========================
+// SHUFFLE
+// =========================
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
+function speakCurrentWord() {
+
+    let word = currentList[currentIndex]?.en || "";
+
+    if (!word) return;
+
+    let utter = new SpeechSynthesisUtterance(word);
+    utter.lang = "en-US";
+    speechSynthesis.speak(utter);
+}
+
+</script>
+</body>
+</html>
+
+		
+
+
