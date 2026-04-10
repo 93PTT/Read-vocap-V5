@@ -122,33 +122,19 @@ const box2 = document.getElementById("box-2");
 
 let list = [];
 let index = 0;
+let audio = new Audio();
 let isRunning = false;
-
-let audio = new Audio(); // 🔥 reuse 1 audio object
 
 /* =========================
    LOAD DATA
 ========================= */
-function loadData() {
-  try {
-    const raw = localStorage.getItem("wordLists");
-    if (!raw) return;
-
-    const lists = JSON.parse(raw);
-
-    list = lists[lists.length - 1]?.words || [];
-
-  } catch (e) {
-    console.log(e);
-  }
-
-  if (!list.length) {
-    box2.textContent = "Không có dữ liệu";
-  }
+function loadData(){
+  const data = JSON.parse(localStorage.getItem("wordLists") || "[]");
+  list = data[data.length - 1]?.words || [];
 }
 
 /* =========================
-   PLAY AUDIO (iOS SAFE)
+   PLAY SAFE IOS
 ========================= */
 function play(url){
   return new Promise(resolve => {
@@ -159,21 +145,21 @@ function play(url){
 
     const p = audio.play();
 
-    if (p && p.catch) {
-      p.catch(() => resolve());
+    if(p && p.catch){
+      p.catch(()=>resolve());
     }
 
-    audio.onended = () => resolve();
-    audio.onerror = () => resolve();
+    audio.onended = resolve;
+    audio.onerror = resolve;
   });
 }
 
 /* =========================
-   RUN LOOP
+   ENGINE LOOP
 ========================= */
 async function run(){
 
-  if (!list.length) return;
+  if(!list.length) return;
 
   isRunning = true;
 
@@ -186,7 +172,7 @@ async function run(){
     // 🔊 EN
     await play(item.enUrl);
 
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 250));
 
     // 🔊 VI
     await play(item.viUrl);
@@ -202,7 +188,7 @@ async function run(){
 }
 
 /* =========================
-   UNLOCK iOS AUDIO
+   IOS UNLOCK (CRITICAL)
 ========================= */
 function unlock(){
   const a = new Audio();
@@ -210,14 +196,10 @@ function unlock(){
 }
 
 /* =========================
-   START (USER GESTURE)
+   START
 ========================= */
-function startOnce(){
-
-  document.removeEventListener("click", startOnce);
-  document.removeEventListener("touchstart", startOnce);
-
-  unlock();
+function start(){
+  unlock();   // 🔥 cực quan trọng iOS
   run();
 }
 
@@ -225,16 +207,12 @@ function startOnce(){
    INIT
 ========================= */
 function init(){
-
   loadData();
-
-  document.addEventListener("click", startOnce, {once:true});
-  document.addEventListener("touchstart", startOnce, {once:true});
+  document.addEventListener("click", start, {once:true});
 }
 
 init();
 </script>
-
 
 
 
