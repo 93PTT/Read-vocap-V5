@@ -118,15 +118,28 @@
 
 
 <script>
-// ===== GOOGLE TTS =====
+// ===== AUDIO ELEMENT (fix iPhone) =====
+let audio = document.createElement("audio");
+audio.style.display = "none";
+document.body.appendChild(audio);
+
+
+// ===== GOOGLE TTS (ổn định hơn cho iOS) =====
 function speak(text, lang, callback){
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(text)}`;
-  
-  const audio = new Audio(url);
+  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=${lang}&client=gtx&q=${encodeURIComponent(text)}`;
+
+  audio.src = url;
+  audio.load();
+
   audio.onended = callback;
-  audio.play().catch(() => {
-    console.log("Audio play blocked, cần user click");
-  });
+
+  let playPromise = audio.play();
+
+  if (playPromise !== undefined){
+    playPromise.catch(() => {
+      console.log("Audio bị chặn, cần user click");
+    });
+  }
 }
 
 
@@ -186,10 +199,15 @@ function playWord(){
 }
 
 
-// ===== CLICK START (giữ nguyên logic của anh) =====
+// ===== CLICK START =====
 document.querySelector('.card-1').addEventListener("click", () => {
   if (!isStarted){
     isStarted = true;
+
+    // reset audio tránh bug iOS
+    audio.pause();
+    audio.currentTime = 0;
+
     playWord();
   }
 });
