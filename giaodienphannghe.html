@@ -118,6 +118,7 @@
 
 
 <script>
+
 // =====================
 // CONFIG
 // =====================
@@ -126,197 +127,198 @@ const API = "https://tts.thanhtam-phan1993.workers.dev";
 // =====================
 // STATE
 // =====================
-let selectedList = null;
+let selectedList = { words: [] };
 let index = 0;
 let isRunning = false;
 let isUnlocked = false;
-let isPaused = false;
-let currentAudio = null;
+
+// =====================
+// UI
+// =====================
+const box2 = document.getElementById("box-2");
 
 // =====================
 // LOAD DATA
 // =====================
-try {
-  selectedList = JSON.parse(localStorage.getItem('selectedList'));
-} catch (e) {
-  selectedList = null;
-}
+function loadData(){
+  try {
+    const raw = localStorage.getItem("selectedList");
+    console.log("RAW:", raw);
 
-const box2 = document.getElementById('box-2');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.words)) {
+        selectedList = parsed;
+      }
+    }
 
-if (!selectedList || !selectedList.words?.length) {
-  box2.textContent = "Không có dữ liệu";
-  throw new Error("No data");
-}
+  } catch (e) {
+    console.log("LOAD ERROR:", e);
+  }
 
-// =====================
-// SHUFFLE
-// =====================
-function shuffleArray(arr){
-  for (let i = arr.length - 1; i > 0; i--){
-    let j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+  console.log("WORDS:", selectedList.words);
+
+  if (!selectedList.words.length) {
+    box2.textContent = "KHÔNG CÓ DỮ LIỆU";
   }
 }
-shuffleArray(selectedList.words);
+
+// =====================
+// SHUFFLE (optional)
+// =====================
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    let j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
 
 // =====================
 // DELAY
 // =====================
 function delay(ms){
-  return new Promise(r => setTimeout(r, ms));
+  return new Promise(r=>setTimeout(r,ms));
 }
 
 // =====================
-// STOP AUDIO SAFELY
+// AUDIO UNLOCK (iOS + Chrome safe)
 // =====================
-function stopCurrentAudio(){
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.src = "";
-    } catch(e){}
-    currentAudio = null;
+async function unlockAudio(){
+  const audio = new Audio();
+  audio.src = "data:audio/mp3;base64,//uQxAAAA";
+
+  try {
+    await audio.play();
+    audio.pause();
+    isUnlocked = true;
+    console.log("AUDIO UNLOCKED");
+  } catch(e){
+    console.log("UNLOCK FAIL:", e);
   }
 }
 
 // =====================
-// PLAY AUDIO (iOS SAFE)
+// CREATE AUDIO
 // =====================
-function playAudio(text, lang){
-  return new Promise((resolve) => {
+function createAudio(text, lang){
+  const url = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  return audio;
+}
 
-    if (!isRunning) return resolve();
-    if (isPaused) return resolve();
+// =====================
+// PLAY AUDIO SAFE
+// =====================
+function playAudio(audio){
+  return new Promise((resolve)=>{
 
-    stopCurrentAudio();
+    try {
+      audio.currentTime = 0;
 
-    const audio = new Audio();
-    currentAudio = audio;
+      const p = audio.play();
 
-    const url = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
-    audio.src = url;
-    audio.preload = "auto";
-
-    let done = false;
-
-    const finish = () => {
-      if (done) return;
-      done = true;
-
-      if (currentAudio === audio) {
-        currentAudio = null;
+      if (p && p.catch) {
+        p.catch(err=>{
+          console.log("PLAY BLOCKED:", err);
+          resolve();
+        });
       }
 
+    } catch(e){
+      console.log("PLAY ERROR:", e);
+      resolve();
+      return;
+    }
+
+    audio.onended = ()=> resolve();
+    audio.onerror = (e)=>{
+      console.log("AUDIO ERROR:", e);
       resolve();
     };
-
-    audio.onended = finish;
-    audio.onerror = finish;
-
-    audio.play().catch(err => {
-      console.log("play blocked:", err);
-      finish();
-    });
   });
 }
 
 // =====================
 // MAIN LOOP
 // =====================
-async function playLoop(){
+async function run(){
+
+  if (!selectedList.words.length) {
+    box2.textContent = "KHÔNG CÓ TỪ";
+    return;
+  }
+
   isRunning = true;
 
-  while (index < selectedList.words.length){
+  box2.textContent = "START...";
 
-    if (!isRunning) break;
+  while(index < selectedList.words.length && isRunning){
 
-    // pause support
-    while (isPaused) {
-      await delay(200);
-    }
+    const w = selectedList.words[index];
+    if (!w) break;
 
-    const word = selectedList.words[index];
-    if (!word) break;
-
-    // show text
-    box2.textContent = word.en;
+    box2.textContent = `${index+1}/${selectedList.words.length} - ${w.en}`;
 
     // VI
-    await playAudio(word.vi, "vi");
-    await delay(250);
+    const viAudio = createAudio(w.vi, "vi");
+    await playAudio(viAudio);
+    await delay(200);
 
     // EN
-    await playAudio(word.en, "en");
-    await delay(900);
+    const enAudio = createAudio(w.en, "en");
+    await playAudio(enAudio);
+    await delay(500);
 
     index++;
   }
 
   box2.textContent = "FINISH";
 
-  // reset
-  index = 0;
   isRunning = false;
+  index = 0;
 }
 
 // =====================
-// UNLOCK AUDIO (iOS REQUIRED)
+// START APP
 // =====================
-async function unlockAudio(){
-  const audio = new Audio();
+async function startApp(){
 
-  // stable iOS unlock trick
-  audio.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAA";
-
-  try {
-    await audio.play();
-    audio.pause();
-    isUnlocked = true;
-  } catch (e) {
-    console.log("unlock failed:", e);
-  }
-}
-
-// =====================
-// TOGGLE START / PAUSE
-// =====================
-async function startOrResume(){
+  if (isRunning) return;
 
   if (!isUnlocked) {
     await unlockAudio();
   }
 
-  if (!isRunning) {
-    isPaused = false;
-    playLoop();
-    return;
-  }
-
-  // toggle pause
-  isPaused = !isPaused;
-
-  if (!isPaused) {
-    console.log("resumed");
-  } else {
-    console.log("paused");
-    stopCurrentAudio();
-  }
+  await run();
 }
 
 // =====================
-// EVENT (iOS BEST: touchstart + click fallback)
+// INIT (FIX PC + MOBILE)
 // =====================
-const card = document.querySelector('.card-1');
+function init(){
 
-card.addEventListener("touchstart", async (e) => {
-  e.preventDefault();
-  await startOrResume();
-});
+  console.log("INIT APP");
 
-card.addEventListener("click", async () => {
-  await startOrResume();
-});
+  loadData();
+
+  box2.textContent = "CLICK / TAP ĐỂ BẮT ĐẦU";
+
+  function startOnce(){
+    document.removeEventListener("click", startOnce);
+    document.removeEventListener("touchstart", startOnce);
+
+    console.log("USER STARTED");
+
+    unlockAudio();
+    startApp();
+  }
+
+  document.addEventListener("click", startOnce);
+  document.addEventListener("touchstart", startOnce);
+}
+
+init();
 </script>
 </body>
 </html>
