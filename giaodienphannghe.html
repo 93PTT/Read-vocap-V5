@@ -1,138 +1,19 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nghe</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-
-
-
-<style>
-	*{box-sizing:border-box;}
-	body{
-		margin:0;
-		font-family:'Poppins', sans-serif;
-		background:snow;
-	}
-
-
-	.app-container{
-		max-width:375px;
-		margin:auto;
-		min-height:100vh;
-		display:flex;
-		flex-direction:column;
-		padding:10px;
-	}
-
-
-
-	.card-1{
-		width: 350px;
-		height:600px;
-		border-radius: 20px;
-		margin:auto;
-		background-image: url("cat5.png");
-    		background-size: cover;
-    		background-position: center;
-		background-repeat: no-repeat;
-		box-shadow:0 20px 50px rgba(0,0,0,0.38);
-	}
-
-
-
-	.cat5-img{
-    		width: 100%;
-    		height: 100%;
-    		object-fit: cover;
-	}
-
-
-
-
-	.box-1 {
-  		width:170px;
-		height:70px;
-		margin:auto;
-		margin-top:100px;
-		border-radius:20px;
-		background:transparent;
-		display:flex;
-		align-items:center;
-		font-size:17px;
-		font-weight:600;
-		color:#555555;
-		justify-content:center;
-		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;
-	}
-
-
-
-	.box-2 {
-  		width:300px;
-		height:100px;
-		margin:auto;
-		margin-top:200px;
-		border-radius:20px;
-		background:transparent;
-		display:flex;
-		align-items:center;
-		font-size:17px;
-		font-weight:600;
-		color:#555555;
-		justify-content:center;
-		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;
-	}
-
-
-	.gif{
-		width:200%;
-		height:200%;
-		object-fit:contain;
-	}
-
-	
-
-</style>
-</head>
-
-
-
-
-
-<body>
-	<div class="app-container">
-		<div class="card-1">
-			<div class="box-1">
-				<img src="audio.gif" class="gif">
-			</div>
-			<div class="box-2" id="box-2"></div>
-		</div>
-	</div>
-
-
 <script>
 const box2 = document.getElementById("box-2");
 
 let list = [];
 let index = 0;
-let audio;
+let audio = null;
 
 /* =========================
-   DEBUG LOG
+   LOG
 ========================= */
 function log(msg){
   console.log("[APP]", msg);
 }
 
 /* =========================
-   LOAD DATA (SAFE)
+   LOAD DATA
 ========================= */
 function loadData(){
   try {
@@ -142,15 +23,12 @@ function loadData(){
 
     const all = JSON.parse(raw || "[]");
 
-    log("parsed lists: " + all.length);
-
     if(!Array.isArray(all) || all.length === 0){
       box2.textContent = "NO DATA";
       return;
     }
 
     const last = all[all.length - 1];
-
     list = last.words || [];
 
     log("words loaded: " + list.length);
@@ -162,10 +40,15 @@ function loadData(){
 }
 
 /* =========================
-   PLAY AUDIO SAFE
+   AUDIO PLAY (iOS SAFE + DETECT BLOCK)
 ========================= */
 function play(url){
   return new Promise(resolve => {
+
+    if(!url){
+      resolve("no-url");
+      return;
+    }
 
     if(!audio){
       audio = new Audio();
@@ -175,22 +58,45 @@ function play(url){
     audio.src = url;
     audio.load();
 
+    let finished = false;
+
+    const done = (status) => {
+      if(finished) return;
+      finished = true;
+      resolve(status);
+    };
+
     const p = audio.play();
 
     if(p && p.catch){
-      p.catch(err=>{
-        log("audio blocked");
-        resolve();
+      p.catch(err => {
+        console.log("[AUDIO BLOCKED]", err);
+        box2.textContent = "AUDIO BLOCKED (iOS)";
+        done("blocked");
       });
     }
 
-    audio.onended = resolve;
-    audio.onerror = resolve;
+    audio.onended = () => done("done");
+
+    audio.onerror = () => {
+      box2.textContent = "AUDIO ERROR";
+      done("error");
+    };
+
+    // 🔥 detect silent fail (iOS trick)
+    setTimeout(() => {
+      if(audio.paused && !finished){
+        console.log("[POSSIBLE BLOCK - silent]");
+        box2.textContent = "SILENT BLOCK (iOS)";
+        done("silent-block");
+      }
+    }, 1200);
+
   });
 }
 
 /* =========================
-   RUN LOOP (FORCED UI UPDATE)
+   RUN LOOP
 ========================= */
 async function run(){
 
@@ -205,23 +111,24 @@ async function run(){
 
     const item = list[index];
 
-    // 🔥 PHỤ ĐỀ LUÔN LUÔN CHẠY
+    // subtitle
     box2.textContent = item.en || "NO TEXT";
 
     log("show: " + item.en);
 
-    // audio không quan trọng nữa
-    if(item.enUrl){
-      await play(item.enUrl);
-    }
+    // EN audio
+    const r1 = await play(item.enUrl);
 
-    await new Promise(r=>setTimeout(r,200));
+    log("EN status: " + r1);
 
-    if(item.viUrl){
-      await play(item.viUrl);
-    }
+    await new Promise(r => setTimeout(r, 200));
 
-    await new Promise(r=>setTimeout(r,400));
+    // VI audio
+    const r2 = await play(item.viUrl);
+
+    log("VI status: " + r2);
+
+    await new Promise(r => setTimeout(r, 400));
 
     index++;
   }
@@ -231,11 +138,18 @@ async function run(){
 }
 
 /* =========================
-   START SAFE (IOS FIX)
+   START (iOS UNLOCK FIX)
 ========================= */
 function start(){
 
-  log("CLICK START");
+  log("USER START");
+
+  // 🔥 unlock audio iOS
+  const unlock = new Audio();
+  unlock.src = "data:audio/mp3;base64,//uQxAA==";
+  unlock.play().catch(() => {
+    console.log("[UNLOCK FAILED]");
+  });
 
   run();
 }
@@ -249,16 +163,9 @@ function init(){
 
   loadData();
 
-  document.addEventListener("click", start, {once:true});
-  document.addEventListener("touchstart", start, {once:true});
+  document.addEventListener("click", start, { once: true });
+  document.addEventListener("touchstart", start, { once: true });
 }
 
 init();
 </script>
-
-</body>
-</html>
-
-		
-
-
