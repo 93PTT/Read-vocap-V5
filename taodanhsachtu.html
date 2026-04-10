@@ -195,51 +195,39 @@ function saveList(){
   const en = document.getElementById('englishWords').value.trim().split('\n');
   const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
 
-  if(!name){
-    alert("Vui lòng nhập tên danh sách");
-    return;
-  }
+  if(!name) return alert("Nhập tên danh sách");
+  if(en.length !== vi.length) return alert("Sai số dòng");
 
-  if(en.length !== vi.length){
-    alert("Số dòng không khớp!");
-    return;
-  }
+  const list = [];
 
-  const API = "https://tts.thanhtam-phan1993.workers.dev";
+  for(let i=0;i<en.length;i++){
 
-  let result = [];
+    const e = en[i].trim();
+    const v = vi[i].trim();
 
-  for(let i = 0; i < en.length; i++){
+    list.push({
+      en: e,
+      vi: v,
 
-    const wordEn = en[i].trim();
-    const wordVi = vi[i].trim();
-
-    // 🔥 CHỈ LƯU TEXT + URL (CHUẨN iOS)
-    result.push({
-      en: wordEn,
-      vi: wordVi,
-      enUrl: `${API}?text=${encodeURIComponent(wordEn)}&lang=en`,
-      viUrl: `${API}?text=${encodeURIComponent(wordVi)}&lang=vi`
+      // 🔥 PRO AUDIO URL (ổn định iPhone)
+      enUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(e)}&tl=en&client=tw-ob`,
+      viUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(v)}&tl=vi&client=tw-ob`
     });
   }
 
-  let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+  let all = JSON.parse(localStorage.getItem("wordLists") || "[]");
 
-  allLists.push({
+  all.push({
     name,
-    words: result
+    words: list
   });
 
-  localStorage.setItem('wordLists', JSON.stringify(allLists));
+  localStorage.setItem("wordLists", JSON.stringify(all));
 
-  const msg = document.getElementById('saveMessage');
-  msg.style.display = 'flex';
-
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 1200);
+  alert("Đã lưu PRO list!");
 }
 </script>
+
 
 </body>
 </html>
