@@ -191,42 +191,73 @@ textarea {
 <script>
 function saveList(){
 
-  const name = document.getElementById('listName').value.trim();
-  const en = document.getElementById('englishWords').value.trim().split('\n');
-  const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
+  const nameEl = document.getElementById('listName');
+  const enEl = document.getElementById('englishWords');
+  const viEl = document.getElementById('vietnameseWords');
 
-  if(!name) return alert("Nhập tên danh sách");
-  if(en.length !== vi.length) return alert("Sai số dòng");
+  const name = (nameEl?.value || "").trim();
+  const en = (enEl?.value || "").split('\n').map(t=>t.trim()).filter(Boolean);
+  const vi = (viEl?.value || "").split('\n').map(t=>t.trim()).filter(Boolean);
 
-  const list = [];
+  // ❗ validate chắc chắn
+  if(!name){
+    alert("Chưa nhập tên danh sách");
+    return;
+  }
+
+  if(en.length === 0 || vi.length === 0){
+    alert("Danh sách trống");
+    return;
+  }
+
+  if(en.length !== vi.length){
+    alert("Số dòng Anh - Việt không khớp");
+    return;
+  }
+
+  // 🔥 build data an toàn 100%
+  const words = [];
 
   for(let i=0;i<en.length;i++){
+    words.push({
+      en: en[i],
+      vi: vi[i],
 
-    const e = en[i].trim();
-    const v = vi[i].trim();
-
-    list.push({
-      en: e,
-      vi: v,
-
-      // 🔥 PRO AUDIO URL (ổn định iPhone)
-      enUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(e)}&tl=en&client=tw-ob`,
-      viUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(v)}&tl=vi&client=tw-ob`
+      // tạm thời dùng text-only (ổn định trước)
+      enUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(en[i])}&tl=en&client=tw-ob`,
+      viUrl: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(vi[i])}&tl=vi&client=tw-ob`
     });
   }
 
-  let all = JSON.parse(localStorage.getItem("wordLists") || "[]");
+  // 🔥 READ OLD DATA SAFELY
+  let allLists = [];
+  try {
+    const raw = localStorage.getItem("wordLists");
+    allLists = raw ? JSON.parse(raw) : [];
+    if(!Array.isArray(allLists)) allLists = [];
+  } catch(e){
+    allLists = [];
+  }
 
-  all.push({
-    name,
-    words: list
+  // 🔥 PUSH NEW LIST
+  allLists.push({
+    id: Date.now(),
+    name: name,
+    words: words
   });
 
-  localStorage.setItem("wordLists", JSON.stringify(all));
+  // 🔥 SAVE
+  localStorage.setItem("wordLists", JSON.stringify(allLists));
 
-  alert("Đã lưu PRO list!");
+  console.log("Saved:", allLists);
+
+  alert("Đã lưu danh sách!");
+
+  // optional redirect
+  // window.location.href = "index.html";
 }
 </script>
+
 
 
 </body>
