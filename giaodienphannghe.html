@@ -124,18 +124,17 @@ const API = "https://tts.thanhtam-phan1993.workers.dev";
 // ===== STATE =====
 let selectedList = null;
 let index = 0;
-let isStarted = false;
 let isRunning = false;
+let unlocked = false;
 let currentAudio = null;
 
-// ===== LOAD DATA SAFE =====
+// ===== LOAD DATA =====
 try {
   selectedList = JSON.parse(localStorage.getItem('selectedList'));
 } catch (e) {
   selectedList = null;
 }
 
-// ===== UI =====
 const box2 = document.getElementById('box-2');
 
 if (!selectedList || !selectedList.words || selectedList.words.length === 0) {
@@ -155,55 +154,49 @@ shuffleArray(selectedList.words);
 
 // ===== DELAY =====
 function delay(ms){
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(r => setTimeout(r, ms));
 }
 
-// ===== AUDIO PLAY (FIXED + SAFE + NO QUEUE BUG) =====
+// ===== AUDIO =====
 function playAudio(text, lang){
   return new Promise((resolve) => {
 
-    // stop previous audio if still exists
+    if (!isRunning) return resolve();
+
     if (currentAudio) {
       try {
         currentAudio.pause();
         currentAudio.src = "";
-      } catch (e) {}
+      } catch(e){}
       currentAudio = null;
     }
 
     const audio = new Audio();
     currentAudio = audio;
 
-    const url = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
-    audio.src = url;
-    audio.preload = "auto";
+    audio.src = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
 
-    let finished = false;
-
-    const done = () => {
-      if (finished) return;
-      finished = true;
-
-      if (currentAudio === audio) {
-        currentAudio = null;
-      }
-
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      if (currentAudio === audio) currentAudio = null;
       resolve();
     };
 
-    audio.onended = done;
-    audio.onerror = () => {
-      console.log("Audio error:", url);
-      done();
-    };
+    audio.onended = finish;
+    audio.onerror = finish;
 
-    audio.play().catch(() => {
-      done();
+    audio.play().then(() => {
+      // OK
+    }).catch(err => {
+      console.log("Play blocked:", err);
+      finish();
     });
   });
 }
 
-// ===== MAIN LOOP =====
+// ===== LOOP =====
 async function playLoop(){
   isRunning = true;
 
@@ -212,48 +205,42 @@ async function playLoop(){
     if (!isRunning) break;
 
     const word = selectedList.words[index];
-    if (!word) break;
 
-    // show text
     box2.textContent = word.en;
 
-    // Vietnamese
     await playAudio(word.vi, "vi");
     await delay(300);
 
-    // English
     await playAudio(word.en, "en");
-    await delay(1000);
+    await delay(900);
 
     index++;
   }
 
   box2.textContent = "FINISH";
 
-  // reset
   index = 0;
-  isStarted = false;
   isRunning = false;
 }
 
-// ===== UNLOCK AUDIO (iOS FIX) =====
-function unlockAudio(){
+// ===== UNLOCK (BẮT BUỘC iPHONE) =====
+async function unlockAudio(){
   const audio = new Audio();
   audio.src = "data:audio/mp3;base64,";
-  audio.play()
-    .then(() => audio.pause())
-    .catch(() => {});
+  try {
+    await audio.play();
+    audio.pause();
+  } catch(e){}
 }
 
-// ===== START EVENT =====
+// ===== START BY TOUCH =====
 document.querySelector('.card-1').addEventListener("click", async () => {
 
-  // chống click phá loop
-  if (isStarted) return;
+  if (unlocked) return;
+  unlocked = true;
 
-  isStarted = true;
+  await unlockAudio();
 
-  unlockAudio();
   playLoop();
 });
 </script>
