@@ -122,120 +122,113 @@ const box2 = document.getElementById("box-2");
 
 let list = [];
 let index = 0;
-let audio;
 
 /* =========================
-   DEBUG LOG
-========================= */
-function log(msg){
-  console.log("[APP]", msg);
-}
-
-/* =========================
-   LOAD DATA (SAFE)
+   LOAD DATA
 ========================= */
 function loadData(){
   try {
     const raw = localStorage.getItem("wordLists");
-
-    log("raw data: " + raw);
-
     const all = JSON.parse(raw || "[]");
-
-    log("parsed lists: " + all.length);
 
     if(!Array.isArray(all) || all.length === 0){
       box2.textContent = "NO DATA";
       return;
     }
 
-    const last = all[all.length - 1];
+    list = all[all.length - 1].words || [];
 
-    list = last.words || [];
+    console.log("LOADED WORDS:", list);
+    box2.textContent = "LOADED: " + list.length;
 
-    log("words loaded: " + list.length);
-
-  } catch(e){
+  } catch (e) {
     console.log("LOAD ERROR", e);
     box2.textContent = "LOAD ERROR";
   }
 }
 
 /* =========================
-   PLAY AUDIO SAFE
+   TEXT TO SPEECH (iOS OK)
 ========================= */
-function play(url){
+function speak(text, lang){
+
   return new Promise(resolve => {
 
-    if(!audio){
-      audio = new Audio();
+    if(!text){
+      resolve("no-text");
+      return;
     }
 
-    audio.pause();
-    audio.src = url;
-    audio.load();
+    // stop previous speech
+    speechSynthesis.cancel();
 
-    const p = audio.play();
+    const u = new SpeechSynthesisUtterance(text);
 
-    if(p && p.catch){
-      p.catch(err=>{
-        log("audio blocked");
-        resolve();
-      });
-    }
+    u.lang = lang || "en-US";
+    u.rate = 1;
+    u.pitch = 1;
+    u.volume = 1;
 
-    audio.onended = resolve;
-    audio.onerror = resolve;
+    u.onend = () => resolve("done");
+    u.onerror = (e) => {
+      console.log("TTS ERROR:", e);
+      resolve("error");
+    };
+
+    speechSynthesis.speak(u);
   });
 }
 
 /* =========================
-   RUN LOOP (FORCED UI UPDATE)
+   MAIN LOOP
 ========================= */
 async function run(){
 
   if(!list.length){
-    box2.textContent = "EMPTY LIST";
+    box2.textContent = "EMPTY";
     return;
   }
-
-  log("START RUN");
 
   while(index < list.length){
 
     const item = list[index];
 
-    // 🔥 PHỤ ĐỀ LUÔN LUÔN CHẠY
-    box2.textContent = item.en || "NO TEXT";
+    console.log("ITEM:", item);
 
-    log("show: " + item.en);
+    box2.textContent = item.en;
 
-    // audio không quan trọng nữa
-    if(item.enUrl){
-      await play(item.enUrl);
-    }
+    // 🔊 đọc tiếng Anh
+    await speak(item.en, "en-US");
+    await delay(300);
 
-    await new Promise(r=>setTimeout(r,200));
-
-    if(item.viUrl){
-      await play(item.viUrl);
-    }
-
-    await new Promise(r=>setTimeout(r,400));
+    // 🔊 đọc tiếng Việt
+    await speak(item.vi, "vi-VN");
+    await delay(500);
 
     index++;
   }
 
   box2.textContent = "FINISH";
-  log("DONE");
+  console.log("DONE");
 }
 
 /* =========================
-   START SAFE (IOS FIX)
+   DELAY
+========================= */
+function delay(ms){
+  return new Promise(r => setTimeout(r, ms));
+}
+
+/* =========================
+   START (IMPORTANT iOS FIX)
 ========================= */
 function start(){
 
-  log("CLICK START");
+  console.log("START");
+
+  // unlock speech on iOS
+  const u = new SpeechSynthesisUtterance(" ");
+  speechSynthesis.speak(u);
 
   run();
 }
@@ -245,12 +238,10 @@ function start(){
 ========================= */
 function init(){
 
-  log("INIT APP");
-
   loadData();
 
-  document.addEventListener("click", start, {once:true});
-  document.addEventListener("touchstart", start, {once:true});
+  document.addEventListener("click", start, { once: true });
+  document.addEventListener("touchstart", start, { once: true });
 }
 
 init();
