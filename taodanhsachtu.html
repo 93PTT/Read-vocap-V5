@@ -185,54 +185,41 @@ textarea {
   <div class="saved-box">✅ Đã lưu danh sách!</div>
 </div>
 
-
-
-
 <script>
 function saveList(){
-
   const name = document.getElementById('listName').value.trim();
   const en = document.getElementById('englishWords').value.trim().split('\n');
   const vi = document.getElementById('vietnameseWords').value.trim().split('\n');
 
   if(!name){
-    alert("no name");
+    alert("Vui lòng nhập tên danh sách");
     return;
   }
 
-  let words = [];
-
-  for(let i=0;i<en.length;i++){
-    words.push({
-      en: en[i],
-      vi: vi[i],
-
-      enUrl: "https://example.com/audio.mp3", // tạm test
-      viUrl: "https://example.com/audio.mp3"
-    });
+  if(en.length !== vi.length){
+    alert("Số dòng không khớp!");
+    return;
   }
 
-  let all = [];
-
-  try {
-    all = JSON.parse(localStorage.getItem("wordLists") || "[]");
-  } catch(e){
-    all = [];
+  let result = [];
+  for(let i = 0; i < en.length; i++){
+    result.push({ en: en[i], vi: vi[i] });
   }
 
-  all.push({
-    name,
-    words
-  });
+  let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+  allLists.push({ name: name, words: result });
+  localStorage.setItem('wordLists', JSON.stringify(allLists));
 
-  localStorage.setItem("wordLists", JSON.stringify(all));
+  // 🔥 HIỆN POPUP
+  const msg = document.getElementById('saveMessage');
+  msg.style.display = 'flex';
 
-  alert("saved ok");
-
-  console.log(all);
+  // 🔥 CHỜ 2 GIÂY RỒI CHUYỂN TRANG
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 2000);
 }
 </script>
-
 
 </body>
 </html>
