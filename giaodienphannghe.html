@@ -123,83 +123,81 @@ const box2 = document.getElementById("box-2");
 let list = [];
 let index = 0;
 let audio = new Audio();
-let isRunning = false;
 
 /* =========================
-   LOAD DATA
+   LOAD (FIX 100%)
 ========================= */
 function loadData(){
-  const data = JSON.parse(localStorage.getItem("wordLists") || "[]");
-  list = data[data.length - 1]?.words || [];
+
+  try{
+    const raw = localStorage.getItem("wordLists");
+
+    const all = raw ? JSON.parse(raw) : [];
+
+    if(!Array.isArray(all) || all.length === 0){
+      box2.textContent = "Không có dữ liệu";
+      return;
+    }
+
+    const last = all[all.length - 1];
+
+    list = last.words || [];
+
+    console.log("Loaded list:", last);
+
+  }catch(e){
+    console.log("LOAD ERROR", e);
+    list = [];
+  }
 }
 
 /* =========================
-   PLAY SAFE IOS
+   PLAY SAFE
 ========================= */
 function play(url){
-  return new Promise(resolve => {
-
+  return new Promise(res=>{
     audio.pause();
     audio.src = url;
     audio.load();
 
     const p = audio.play();
+    if(p && p.catch) p.catch(()=>res());
 
-    if(p && p.catch){
-      p.catch(()=>resolve());
-    }
-
-    audio.onended = resolve;
-    audio.onerror = resolve;
+    audio.onended = res;
+    audio.onerror = res;
   });
 }
 
 /* =========================
-   ENGINE LOOP
+   RUN
 ========================= */
 async function run(){
 
   if(!list.length) return;
 
-  isRunning = true;
-
-  while(index < list.length && isRunning){
+  while(index < list.length){
 
     const item = list[index];
 
     box2.textContent = item.en;
 
-    // 🔊 EN
     await play(item.enUrl);
+    await new Promise(r=>setTimeout(r,200));
 
-    await new Promise(r => setTimeout(r, 250));
-
-    // 🔊 VI
     await play(item.viUrl);
-
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r=>setTimeout(r,400));
 
     index++;
   }
 
   box2.textContent = "FINISH";
-  isRunning = false;
   index = 0;
-}
-
-/* =========================
-   IOS UNLOCK (CRITICAL)
-========================= */
-function unlock(){
-  const a = new Audio();
-  a.play().catch(()=>{});
 }
 
 /* =========================
    START
 ========================= */
 function start(){
-  unlock();   // 🔥 cực quan trọng iOS
   run();
 }
 
@@ -213,7 +211,6 @@ function init(){
 
 init();
 </script>
-
 
 
 </body>
