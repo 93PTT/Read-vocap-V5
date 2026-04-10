@@ -125,6 +125,8 @@ const API = "https://tts.thanhtam-phan1993.workers.dev";
 let selectedList = null;
 let index = 0;
 let isStarted = false;
+let isRunning = false;
+let currentAudio = null;
 
 // ===== LOAD DATA SAFE =====
 try {
@@ -156,12 +158,23 @@ function delay(ms){
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// ===== AUDIO PLAY (SAFE + NO REUSE BUG) =====
+// ===== AUDIO PLAY (FIXED + SAFE + NO QUEUE BUG) =====
 function playAudio(text, lang){
   return new Promise((resolve) => {
-    const audio = new Audio();
-    const url = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
 
+    // stop previous audio if still exists
+    if (currentAudio) {
+      try {
+        currentAudio.pause();
+        currentAudio.src = "";
+      } catch (e) {}
+      currentAudio = null;
+    }
+
+    const audio = new Audio();
+    currentAudio = audio;
+
+    const url = `${API}?text=${encodeURIComponent(text)}&lang=${lang}`;
     audio.src = url;
     audio.preload = "auto";
 
@@ -170,6 +183,11 @@ function playAudio(text, lang){
     const done = () => {
       if (finished) return;
       finished = true;
+
+      if (currentAudio === audio) {
+        currentAudio = null;
+      }
+
       resolve();
     };
 
@@ -179,21 +197,21 @@ function playAudio(text, lang){
       done();
     };
 
-    audio.play()
-      .then(() => {
-        // iPhone stable hook
-      })
-      .catch(() => {
-        done();
-      });
+    audio.play().catch(() => {
+      done();
+    });
   });
 }
 
 // ===== MAIN LOOP =====
 async function playLoop(){
-  while (index < selectedList.words.length){
-    const word = selectedList.words[index];
+  isRunning = true;
 
+  while (index < selectedList.words.length){
+
+    if (!isRunning) break;
+
+    const word = selectedList.words[index];
     if (!word) break;
 
     // show text
@@ -205,16 +223,17 @@ async function playLoop(){
 
     // English
     await playAudio(word.en, "en");
-    await delay(1200);
+    await delay(1000);
 
     index++;
   }
 
   box2.textContent = "FINISH";
 
-  // reset state for replay
+  // reset
   index = 0;
   isStarted = false;
+  isRunning = false;
 }
 
 // ===== UNLOCK AUDIO (iOS FIX) =====
@@ -228,7 +247,10 @@ function unlockAudio(){
 
 // ===== START EVENT =====
 document.querySelector('.card-1').addEventListener("click", async () => {
+
+  // chống click phá loop
   if (isStarted) return;
+
   isStarted = true;
 
   unlockAudio();
