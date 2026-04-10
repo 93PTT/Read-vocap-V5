@@ -118,78 +118,81 @@
 
 
 <script>
-	function shuffleArray(array){
-		for (let i = array.length - 1; i > 0; i--){
-		let j = Math.floor(Math.random() * (i + 1));
-		[array[i], array[j]] = [array[j], array[i]];
-		}
-	}
-
-	let selectedList = JSON.parse(localStorage.getItem('selectedList'));
-	const box2 = document.getElementById('box-2');
-	if (!selectedList || !selectedList.words) {
-	box2.textContent = "Không có dữ liệu";
-	}
+// ===== GOOGLE TTS =====
+function speak(text, lang, callback){
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(text)}`;
+  
+  const audio = new Audio(url);
+  audio.onended = callback;
+  audio.play().catch(() => {
+    console.log("Audio play blocked, cần user click");
+  });
+}
 
 
-	if (selectedList && selectedList.words){
-	shuffleArray(selectedList.words);
-	}
-	let index = 0;
-	let isStarted = false;
+// ===== SHUFFLE =====
+function shuffleArray(array){
+  for (let i = array.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
 
-	let audio = new Audio();
+// ===== LOAD DATA =====
+let selectedList = JSON.parse(localStorage.getItem('selectedList'));
+const box2 = document.getElementById('box-2');
+
+if (!selectedList || !selectedList.words){
+  box2.textContent = "Không có dữ liệu";
+  throw new Error("No data");
+}
+
+// random từ
+shuffleArray(selectedList.words);
 
 
-	function getAudioURL(text, lang){
-	return `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=tw-ob`;
-	}
+// ===== STATE =====
+let index = 0;
+let isStarted = false;
 
 
+// ===== PLAY WORD =====
+function playWord(){
+  if (index >= selectedList.words.length){
+    box2.textContent = "FINISH";
+    return;
+  }
 
-	function playWord(){
+  let word = selectedList.words[index];
 
-	if (index >= selectedList.words.length){
-		box2.textContent = "FINISH";
-		return;
-	}
+  // hiện subtitle
+  box2.textContent = word.en;
 
-	let word = selectedList.words[index];
+  // ===== TIẾNG VIỆT =====
+  speak(word.vi, "vi", () => {
 
-	// hiện subtitle
-	box2.textContent = word.en;
+    setTimeout(() => {
 
-	// --- đọc tiếng Việt ---
-	audio.src = getAudioURL(word.vi, "vi");
-	audio.play();
+      // ===== TIẾNG ANH =====
+      speak(word.en, "en", () => {
+        index++;
+        setTimeout(playWord, 1500);
+      });
 
-	audio.onended = () => {
+    }, 500);
 
-		setTimeout(() => {
-
-			// --- đọc tiếng Anh ---
-			audio.src = getAudioURL(word.en, "en");
-			audio.play();
-
-			audio.onended = () => {
-				index++;
-				setTimeout(playWord, 1500);
-			};
-
-		}, 500);
-	};
-	}
+  });
+}
 
 
-
-	document.body.addEventListener("click", () => {
-	if (!isStarted){
-		isStarted = true;
-		playWord();
-	}
-	});
-	console.log(speechSynthesis.getVoices().map(v => v.lang));
+// ===== CLICK START (giữ nguyên logic của anh) =====
+document.querySelector('.card-1').addEventListener("click", () => {
+  if (!isStarted){
+    isStarted = true;
+    playWord();
+  }
+});
 </script>
 </body>
 </html>
