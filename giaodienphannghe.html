@@ -124,22 +124,22 @@ let audioQueue = [];
 let index = 0;
 let isRunning = false;
 
-// 👉 data sẽ chứa audio đã lưu (sau này từ IndexedDB hoặc localStorage)
 let selectedList = { words: [] };
 
+/* =========================
+   LOAD DATA
+========================= */
 function loadData() {
   try {
-    const raw = localStorage.getItem("selectedList");
+    const raw = localStorage.getItem("wordLists");
 
-    if (raw) {
-      const parsed = JSON.parse(raw);
+    if (!raw) return;
 
-      // kỳ vọng format mới:
-      // words: [{ en, vi, enAudio, viAudio }]
-      if (parsed?.words?.length) {
-        selectedList = parsed;
-      }
-    }
+    const lists = JSON.parse(raw);
+
+    // 👉 lấy danh sách cuối cùng
+    selectedList = lists[lists.length - 1] || { words: [] };
+
   } catch (e) {
     console.log("LOAD ERROR:", e);
   }
@@ -149,7 +149,9 @@ function loadData() {
   }
 }
 
-// 👉 shuffle giữ nguyên
+/* =========================
+   SHUFFLE (optional)
+========================= */
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
@@ -157,23 +159,28 @@ function shuffle(arr) {
   }
 }
 
-// 👉 build queue từ DATA ĐÃ CÓ AUDIO
+/* =========================
+   BUILD QUEUE
+========================= */
 function buildQueue() {
   audioQueue = selectedList.words.map(w => ({
     text: w.en,
-    viUrl: w.viAudio,
-    enUrl: w.enAudio
+    vi: w.viAudio,
+    en: w.enAudio
   }));
 }
 
-// 👉 iOS-safe play
-function playUrl(url) {
+/* =========================
+   🔥 IMPORTANT: IOS SAFE PLAY
+========================= */
+function playAudio(url) {
   return new Promise(resolve => {
-    const audio = new Audio(url);
 
+    const audio = new Audio(url);
     audio.preload = "auto";
     audio.load();
 
+    // iOS trick
     const p = audio.play();
 
     if (p && p.catch) {
@@ -182,25 +189,44 @@ function playUrl(url) {
 
     audio.onended = () => resolve();
     audio.onerror = () => resolve();
+
   });
 }
 
+/* =========================
+   AUDIO UNLOCK (CRITICAL IOS)
+========================= */
+function unlockAudio() {
+  const audio = new Audio();
+
+  audio.play().catch(() => {
+    // ignore
+  });
+}
+
+/* =========================
+   MAIN RUN LOOP
+========================= */
 async function run() {
+
   if (!audioQueue.length) return;
 
   isRunning = true;
 
   while (index < audioQueue.length && isRunning) {
+
     const item = audioQueue[index];
 
     box2.textContent = item.text;
 
-    // 🔊 play VI
-    await playUrl(item.viUrl);
+    // 🔊 play EN
+    await playAudio(item.en);
+
     await new Promise(r => setTimeout(r, 200));
 
-    // 🔊 play EN
-    await playUrl(item.enUrl);
+    // 🔊 play VI
+    await playAudio(item.vi);
+
     await new Promise(r => setTimeout(r, 500));
 
     index++;
@@ -212,38 +238,40 @@ async function run() {
   index = 0;
 }
 
-async function start() {
-  if (isRunning) return;
+/* =========================
+   START (ONLY ENTRY POINT)
+========================= */
+function startOnce() {
+
+  document.removeEventListener("click", startOnce);
+  document.removeEventListener("touchstart", startOnce);
+
+  // 🔥 MUST unlock audio in gesture
+  unlockAudio();
+
   run();
 }
 
-// 👉 unlock iOS audio system (rất quan trọng)
-function unlockIOS() {
-  const audio = new Audio();
-  audio.play().catch(() => {});
-}
-
-// 👉 init
+/* =========================
+   INIT
+========================= */
 function init() {
+
   loadData();
 
+  // nếu anh muốn random
   shuffle(selectedList.words);
+
   buildQueue();
-
-  function startOnce() {
-    document.removeEventListener("click", startOnce);
-    document.removeEventListener("touchstart", startOnce);
-
-    unlockIOS(); // 🔥 mở khóa iOS audio
-
-    start();
-  }
 
   document.addEventListener("click", startOnce, { once: true });
   document.addEventListener("touchstart", startOnce, { once: true });
+
 }
 
 init();
+</script>
+
 </script>
 </body>
 </html>
