@@ -209,8 +209,8 @@
 // =========================
 // LOAD DATA
 // =========================
-let selectedList = JSON.parse(localStorage.getItem('selectedList') || '{}');
-let currentList = selectedList.words || [];
+	let selectedList = JSON.parse(localStorage.getItem('selectedList'));
+	let currentList = selectedList?.words || [];
 
 shuffleArray(currentList);
 
