@@ -159,7 +159,7 @@
 
 <script>
 
-	let selectedList = JSON.parse(localStorage.getItem('selectedList') || 'null');
+	let selectedList = JSON.parse(localStorage.getItem('selectedList'));
 	let currentList = selectedList?.words || [];
 	shuffleArray(currentList);
 	let currentIndex = 0;
