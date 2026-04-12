@@ -2,25 +2,19 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Chính tả</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-
+<title>Yourself</title>
 
 <style>
 	*{box-sizing:border-box;}
+
 	body{
 		margin:0;
-		font-family:'Poppins', sans-serif;
-		background:snow;}
-
-
-	.header{
-		text-align:center;
-		margin-top:10px;}
+		overflow:hidden;
+		font-family:sans-serif;}
+		height:100dvh;
 
 
 	.bg-video{
@@ -31,6 +25,11 @@
 		object-fit:cover;
 		z-index:-2;}
 
+	.overlay{
+		position:fixed;
+		inset:0;
+		background:rgba(0,0,0,0.25);
+		z-index:-1;}
 
 
 	.app-container{
@@ -42,227 +41,329 @@
 		align-items:center;
 		padding-top:env(safe-area-inset-top);
 		padding-bottom:env(safe-area-inset-bottom);
-		padding-left:0px;
+		padding-left:10px;
 		padding-right:10px;}
-
-
-	.overlay{
-    		position:fixed;
-    		inset:0;
-    		background:rgba(0,0,0,0.25);
-    		z-index:-1;}
-
-
-
 
 
 	.card-1{
 		width:100%;
-		height:350px;
+		height:600px;
+		border-radius:20px;
+		background:transparent;
+		display:flex;
+		justify-content:center;
+		align-items:flex-start;
+		transform:translateY(-10px);}
+
+
+	.card-2{
+		width:280px;
+		height:280px;
+		margin-top:0px;
 		border-radius:20px;
 		background:rgba(255,255,255,0.2);
 		backdrop-filter:blur(10px);
-		display:flex;
-		flex-direction:column;
-		justify-content:center;
-		align-items:center;
-		transform:translateY(-150px);}
+		position:relative;
+		box-shadow:0 8px 20px rgba(0,0,0,0.3);}
 
 
-
-
-
-	.box-1{
-		width:300px;
-		height:100px;
-		margin:auto;
-		margin-top:10px;
+	.box-1,.box-2,.box-3,.box-4{
+		width:110px;
+		height:110px;
 		border-radius:20px;
-		background:snow;
-		display:flex;
-		align-items:center;
-		font-size:17px;
-		font-weight:600;
-		color:#555555;
+		position:absolute;
+		background-size:cover;
+		box-shadow:0 8px 20px rgba(0,0,0,0.3);
+		cursor:pointer;
+		border:none;
+		outline:none;
+		padding:0;
+		transition: transform 0.1s ease;}
+
+	.box-1{top:20px;left:20px;background-image:url("spell2.png");}
+	.box-2{top:20px;right:20px;background-image:url("memorize2.png");}
+	.box-3{bottom:20px;left:20px;background-image:url("listen2.png");}
+	.box-4{bottom:20px;right:20px;background-image:url("pronounce2.png");}
+	.box-1:active,.box-2:active,.box-3:active,.box-4:active{
+	transform:scale(0.95);}
+
+
+
+	.popup-overlay{
+		position:fixed;
+		inset:0;
+		background:rgba(0,0,0,0.5);
+		display:none;
 		justify-content:center;
-		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;}
+		align-items:center;
+		z-index:10;}
 
 
 
-	.box-2{
-		width:300px;
-		height: 100px;
-		margin:20px auto;
+
+	.popup{
+		width:280px;
+		max-height:400px;
+		background:rgba(255,255,255,0.95);
 		border-radius:20px;
-		background:snow;
-		display:flex;
-		align-items:center;
-		font-size:17px;
-		font-weight:600;
-		color:#555555;
-		justify-content:center;
-		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;}
+		padding:15px;
+		overflow-y:auto;
+		box-shadow:0 10px 30px rgba(0,0,0,0.4);}
 
 
 
 
-	.box-3{
-		width:100px;
-		height:35px;
-		margin-top:10px;
-		align-self:flex-end;
-		border-radius:10px;
-		background:transparent;
-		display:flex;
-		align-items:center;
-		font-size:15px;
-		font-weight:600;
-		color:#555555;
-		justify-content:center;}
+	.item{
+		padding:12px;
+		margin-bottom:10px;
+		border-radius:12px;
+		background:#f1f1f1;
+		cursor:pointer;
+		text-align:center;
+		transition:0.2s;}
+	.item:hover{
+		background:#ddd;}
 
 
 
 
+	.btn-cancel, .btn-delete{
+  		flex:1;
+  		padding:10px;
+  		border:none;
+  		border-radius:12px;
+  		font-weight:600;
+  		cursor:pointer;}
 
-	.feedback {
-  		text-align: center;
-  		font-weight: 600;
-  		margin-top: -10px;
-  		min-height: 20px;
-  		border-radius: 12px;
-  		padding: 6px 0;
-		height: 35px;
-		display: flex;
-		text-align: center;
-		justify-content: center;
-		align-items: center;}
+	.btn-cancel{
+  		background:#ddd;}
+
+	.btn-delete{
+  		background:#ff4d4f;
+  		color:white;}
 
 
-	.feedback.correct { background:transparent; color:#1b5e20; }
-	.feedback.wrong { background:transparent; color:#b71c1c; }
 </style>
 </head>
+
+
+
 <body>
-	<video autoplay muted loop playsinline class="bg-video"><source src="dog.mp4" type="video/mp4"></video>
+	<video autoplay muted loop playsinline class="bg-video"><source src="cat.mp4" type="video/mp4"></video>
 	<div class="overlay"></div>
 	<div class="app-container">
-		<div class="card-1">
-			<div class="box box-3" id="btnO3">Từ còn lại</div>
-			<div class="box box-1" id="btnO1">Ô 1</div>
-			<div class="box box-2" id="btnO2">Ô 2</div>
-			<div class="feedback" id="feedback"></div>
+	<div class="card-1">
+		<div class="card-2">
+			<button class="box-1" onclick="chooseMode('spell')"></button>
+			<button class="box-2" onclick="chooseMode('memorize')"></button>
+			<button class="box-3" onclick="chooseMode('listen')"></button>
+			<button class="box-4" onclick="chooseMode('pronounce')"></button>
 		</div>
 	</div>
+	</div>
 
+	<div class="popup-overlay" id="popup">
+	<div class="popup" id="listContainer"></div>
+	<div class="popup-overlay" id="deletePopup">
+	  	<div class="popup">
+    		<div style="text-align:center; margin-bottom:15px; font-weight:600;">
+      		Xóa danh sách này?
+    	</div>
 
-
-
+    	<div style="display:flex; gap:10px;">
+      		<button class="btn-cancel" onclick="closeDeletePopup()">Hủy</button>
+      		<button class="btn-delete" onclick="confirmDelete()">Xóa</button>
+    	</div>
+  </div>
+</div>
+	</div>
 
 <script>
 
-	let selectedList = JSON.parse(localStorage.getItem('selectedList'));
-	let currentList = selectedList?.words || [];
-	shuffleArray(currentList);
-	let currentIndex = 0;
+	document.body.addEventListener("touchstart", () => {
+  	const input = document.querySelector("input");
+  	if (input) input.focus();
+	}, { once: true });
+	
 
-
-	function renderWord(){
-	if(currentList.length === 0){
-        document.getElementById("btnO1").innerText = "Không có dữ liệu";
-        document.getElementById("btnO2").innerText = "";
-        document.getElementById("btnO3").innerText = "";
-        return;}
-    	let word = currentList[currentIndex];
-    	document.getElementById("btnO1").innerText = word.vi;
-    	document.getElementById("btnO2").innerHTML = `
-        <input id="answerInput" type="text"
-            autocomplete="off"
-            style="
-                width:100%;
-                height:100%;
-                border:none;
-                outline:none;
-                font-size:17px;
-                font-weight:600;
-                text-align:center;
-                border-radius:20px;
-            "onkeydown="handleEnter(event)"/>`;
-    	document.getElementById("btnO3").innerText =
-        `Còn ${currentList.length - currentIndex - 1} từ`;
-    	let fb = document.getElementById("feedback");
-    	fb.innerText = "";
-    	fb.className = "feedback";
-    	setTimeout(()=>{
-        document.getElementById("answerInput")?.focus();
-    	},100);}
+	let selectedMode = null;
+	let wordLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
 
 
 
-	function handleEnter(e){
-    	if(e.key !== "Enter") return;
-    	let word = currentList[currentIndex];
-    	let input = document.getElementById("answerInput").value.trim();
-    	let feedback = document.getElementById("feedback");
-    	if(input.toLowerCase() === word.en.toLowerCase()){
-        feedback.innerText = "Chính xác ✔";
-        feedback.className = "feedback correct";
-        setTimeout(()=>{
-            nextWord();
-        }, 700);
-    	} else {
-        feedback.innerText = word.en;
-        feedback.className = "feedback wrong";
-        let wrongWord = currentList.splice(currentIndex, 1)[0];
-        let newPos = Math.min(currentIndex + 3, currentList.length);
-        currentList.splice(newPos, 0, wrongWord);
-        setTimeout(()=>{
-            renderWord();
-        }, 1500);
-    	}
+	function chooseMode(mode){
+		selectedMode = mode;
+		openPopup();}
+
+
+
+	function openPopup(){
+		renderLists();
+		document.getElementById("popup").style.display = "flex";}
+
+
+
+
+	function closePopup(){
+		document.getElementById("popup").style.display = "none";}
+
+
+
+
+	document.getElementById("popup").addEventListener("click", function(e){
+		if(e.target.id === "popup"){
+			closePopup();}
+	});
+
+
+
+
+
+	function renderLists(){
+	const container = document.getElementById("listContainer");
+	container.innerHTML = "";
+
+	// 🔥 NÚT TẠO MỚI
+	const createBtn = document.createElement("div");
+	createBtn.className = "item";
+	createBtn.innerText = "➕ Tạo danh sách mới";
+	createBtn.style.fontWeight = "600";
+	createBtn.onclick = () => {
+		window.location.href = "taodanhsachtu.html";
+	};
+	container.appendChild(createBtn);
+
+	// 🔹 Nếu không có list
+	if(wordLists.length === 0){
+		const empty = document.createElement("div");
+		empty.className = "item";
+		empty.innerText = "Chưa có danh sách";
+		container.appendChild(empty);
+		return;
 	}
 
+	// 🔥 RENDER LIST
+	wordLists.forEach((list, index)=>{
+
+		const row = document.createElement("div");
+		row.className = "item";
+		row.style.display = "flex";
+		row.style.alignItems = "center";
+		row.style.gap = "10px";
+
+		// ✏️ nút sửa (trái)
+		const editBtn = document.createElement("span");
+		editBtn.innerText = "✏️";
+		editBtn.style.cursor = "pointer";
+		editBtn.style.flexShrink = "0";
+
+		editBtn.onclick = (e) => {
+			e.stopPropagation();
+			editList(index);
+		};
+
+		// tên list (giữa)
+		const name = document.createElement("span");
+		name.innerText = list.name;
+		name.style.flex = "1";
+		name.style.textAlign = "center";
+
+		name.onclick = () => selectList(list);
+
+		// 🗑 nút xóa (phải)
+		const deleteBtn = document.createElement("span");
+		deleteBtn.innerText = "🗑";
+		deleteBtn.style.cursor = "pointer";
+		deleteBtn.style.flexShrink = "0";
+
+		deleteBtn.onclick = (e) => {
+	e.stopPropagation();
+	openDeletePopup(index);
+		};
+
+		// hover hiệu ứng nhẹ
+		editBtn.onmouseover = () => editBtn.style.transform = "scale(1.2)";
+		editBtn.onmouseout  = () => editBtn.style.transform = "scale(1)";
+
+		deleteBtn.onmouseover = () => deleteBtn.style.transform = "scale(1.2)";
+		deleteBtn.onmouseout  = () => deleteBtn.style.transform = "scale(1)";
+
+		// gắn vào row
+		row.appendChild(editBtn);
+		row.appendChild(name);
+		row.appendChild(deleteBtn);
+
+		// ❗ QUAN TRỌNG: gắn row vào container
+		container.appendChild(row);
+
+	});
+}
 
 
-	function nextWord(){
-    	currentIndex++;
-    	if(currentIndex >= currentList.length){
-        showFinish();
-        return;
-    	}
-    	renderWord();}
+
+
+function deleteList(index){
+	if(!confirm("Xóa danh sách này?")) return;
+
+	wordLists.splice(index, 1);
+	localStorage.setItem("wordLists", JSON.stringify(wordLists));
+
+	renderLists(); // render lại
+}
 
 
 
-	function showFinish(){
-    	document.getElementById("btnO1").innerText = "FINISH 🎉";
-    	document.getElementById("btnO2").innerHTML = "";
-    	document.getElementById("btnO3").innerText = "";
 
-    	let fb = document.getElementById("feedback");
-    	fb.innerText = "Hoàn thành danh sách ✔";
-    	fb.className = "feedback correct";}
+function editList(index){
+	localStorage.setItem("editIndex", index);
+	window.location.href = "taodanhsachtu.html";
+}
 
 
 
-	function backWord(){
-    	if(currentIndex > 0){
-        currentIndex--;
-        renderWord();}}
+	function selectList(list){
+		localStorage.setItem("selectedList", JSON.stringify(list));
+		localStorage.setItem("selectedMode", selectedMode);
+		closePopup();
+		goToLesson();}
 
 
-	function shuffleArray(array){
-    	if(!array || array.length <= 1) return;
-    	for(let i = array.length - 1; i > 0; i--){
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];}}
-	renderWord();
+
+	function goToLesson(){
+		if(selectedMode === "spell"){
+			window.location.href = "giaodienphanchinhta.html";}
+		else if(selectedMode === "memorize"){
+			window.location.href = "giaodienphanghinho.html";}
+		else if(selectedMode === "listen"){
+			window.location.href = "giaodienphannghe.html";}
+		else if(selectedMode === "pronounce"){
+			window.location.href = "giaodienphanphatam.html";}}
+
+
+
+let deleteIndex = null;
+
+function openDeletePopup(index){
+  deleteIndex = index;
+  document.getElementById("deletePopup").style.display = "flex";
+}
+
+function closeDeletePopup(){
+  document.getElementById("deletePopup").style.display = "none";
+}
+
+function confirmDelete(){
+  if(deleteIndex === null) return;
+
+  wordLists.splice(deleteIndex, 1);
+  localStorage.setItem("wordLists", JSON.stringify(wordLists));
+
+  closeDeletePopup();
+  renderLists();
+}
+
+
 
 </script>
 </body>
 </html>
-
-		
-
-
