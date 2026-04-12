@@ -229,6 +229,7 @@ function saveList(){
 	localStorage.removeItem("editIndex");
 } else {
 	allLists.push({ name: name, words: result });
+	localStorage.setItem('wordLists', JSON.stringify(allLists));
 }
 
   // 🔥 HIỆN POPUP
