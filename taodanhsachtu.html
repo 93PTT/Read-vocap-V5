@@ -186,6 +186,23 @@ textarea {
 </div>
 
 <script>
+let editIndex = localStorage.getItem("editIndex");
+
+if(editIndex !== null){
+	let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
+	let list = allLists[editIndex];
+
+	if(list){
+		document.getElementById('listName').value = list.name;
+		document.getElementById('englishWords').value =
+			list.words.map(w => w.en).join("\n");
+		document.getElementById('vietnameseWords').value =
+			list.words.map(w => w.vi).join("\n");
+	}
+}
+
+
+
 function saveList(){
   const name = document.getElementById('listName').value.trim();
   const en = document.getElementById('englishWords').value.trim().split('\n');
@@ -207,8 +224,12 @@ function saveList(){
   }
 
   let allLists = JSON.parse(localStorage.getItem('wordLists') || '[]');
-  allLists.push({ name: name, words: result });
-  localStorage.setItem('wordLists', JSON.stringify(allLists));
+  if(editIndex !== null){
+	allLists[editIndex] = { name: name, words: result };
+	localStorage.removeItem("editIndex");
+} else {
+	allLists.push({ name: name, words: result });
+}
 
   // 🔥 HIỆN POPUP
   const msg = document.getElementById('saveMessage');
