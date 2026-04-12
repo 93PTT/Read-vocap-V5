@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<!-- saved from url=(0055)file:///C:/Users/VIP/Documents/New%20project/index.html -->
-<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HỌC TỪ VỰNG</title>
-<link href="./HỌC TỪ VỰNG_files/css2" rel="stylesheet">
+<title>Giao diện</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-*{
-	box-sizing:border-box;
-}
-
-body{
+*{box-sizing:border-box;}
+body{	
 	margin:0;
 	font-family:'Poppins',sans-serif;
 	background:snow;
 	overflow-x:hidden;
-	overflow-y:auto;
-}
+	overflow-y:auto;}
+
+
 
 .app-container{
 	max-width:375px;
@@ -25,521 +23,113 @@ body{
 	min-height:100vh;
 	display:flex;
 	flex-direction:column;
-	padding:20px;
-}
+	padding:20px;}
 
-.header{
-	text-align:center;
-	margin-top:10px;
-}
+.card-1{
+	width: 350px;
+	height:600px;
+	border-radius: 20px;
+	margin:auto;
+	background-image: url("candy.png");
+    	background-size: cover;
+    	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow:0 20px 50px rgba(0,0,0,0.38);}
 
-.cat-img{
-	width:100%;
-	max-width:280px;
-	border-radius:20px;
-	object-fit:cover;
-}
 
-.title{
-	margin-top:10px;
-	font-size:15px;
-	font-weight:600;
-	color:#555555;
-	font-style:italic;
-}
-
-.selected-list{
-	margin-top:14px;
-	font-size:14px;
-	font-weight:600;
-	color:#777777;
-}
-
-.selected-list strong{
-	color:#444444;
-}
 
 .card-2{
-	background:white;
-	border-radius:28px;
-	padding:20px;
-	margin-top:20px;
-	box-shadow:0 20px 50px rgba(0,0,0,0.18);
-}
-
-.grid{
-	display:grid;
-	grid-template-columns:1fr 1fr;
-	gap:15px;
-}
-
-.box{
-	aspect-ratio:1/1;
+	width:260px;
+	height:220px;
+	margin:auto;
+	margin-top:70px;
 	border-radius:20px;
+	background:rgba(255, 255, 255, 0.2);
+	backdrop-filter: blur(10px);
 	display:flex;
-	align-items:center;
-	justify-content:center;
-	font-size:16px;
-	font-weight:600;
-	color:#555555;
-	cursor:pointer;
-	transition:transform 0.2s,background 0.2s;
-	box-shadow:0 8px 20px rgba(0,0,0,0.08);
-	user-select:none;
-	text-align:center;
-	padding:12px;
-}
+	flex-direction:column
+	box-shadow:0 8px 20px rgba(0,0,0,0.28);}
 
-.box1{
-	background:#FDE2CA;
-}
 
-.box2{
-	background:#DDF4E7;
-}
 
-.box3{
-	background:#E3ECFF;
-}
 
-.box4{
-	background:#F3E5FF;
-}
+.box-1 {
+  	width:80px;
+	height:80px;
+	margin-left:20px;
+	margin-top:20px;
+	border-radius:20px;
+	background-image: url("spell2.png");
+    	background-size: cover;
+    	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow:0 8px 20px rgba(0,0,0,0.28);}
 
-.box1:hover{
-	background:#f7cfae;
-}
 
-.box2:hover{
-	background:#ccebdc;
-}
 
-.box3:hover{
-	background:#d2ddff;
-}
+.box-2 {
+  	width:80px;
+	height:80px;
+	margin-left:60px;
+	margin-top:20px;
+	border-radius:20px;
+	background-image: url("memorize2.png");
+    	background-size: cover;
+    	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow:0 8px 20px rgba(0,0,0,0.28);}
 
-.box4:hover{
-	background:#e7d3ff;
-}
+
+
+
+.box-3 {
+  	width:80px;
+	height:80px;
+	margin-left:-220px;
+	margin-top:120px;
+	border-radius:20px;
+	background-image: url("listen2.png");
+    	background-size: cover;
+    	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow:0 8px 20px rgba(0,0,0,0.28);}
+
+
+
+.box-4 {
+  	width:80px;
+	height:80px;
+	margin-left:60px;
+	margin-top:120px;
+	border-radius:20px;
+	background-image: url("pronounce2.png");
+    	background-size: cover;
+    	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow:0 8px 20px rgba(0,0,0,0.28);}
+
+
+
+
+
 
 .box:active{
-	transform:scale(0.95);
-}
+	transform:scale(0.95);}
 
-.modal-overlay{
-	display:none;
-	position:fixed;
-	inset:0;
-	background:rgba(0,0,0,0.28);
-	backdrop-filter:blur(3px);
-	z-index:90;
-}
 
-.list-modal{
-	display:none;
-	position:fixed;
-	top:50%;
-	left:50%;
-	transform:translate(-50%,-50%);
-	width:calc(100% - 32px);
-	max-width:360px;
-	background:white;
-	border-radius:24px;
-	box-shadow:0 20px 50px rgba(0,0,0,0.18);
-	z-index:91;
-	padding:18px;
-}
 
-.list-modal-header{
-	display:flex;
-	align-items:flex-start;
-	justify-content:space-between;
-	gap:12px;
-	margin-bottom:14px;
-}
-
-.list-modal-title{
-	font-size:18px;
-	font-weight:600;
-	color:#444444;
-}
-
-.list-modal-subtitle{
-	margin-top:4px;
-	font-size:13px;
-	color:#7a7a7a;
-}
-
-.close-modal-btn{
-	border:none;
-	background:#f3f3f3;
-	color:#555555;
-	width:34px;
-	height:34px;
-	border-radius:12px;
-	cursor:pointer;
-	font-size:18px;
-	font-family:inherit;
-}
-
-.close-modal-btn:hover{
-	background:#e8e8e8;
-}
-
-.dropdown{
-	width:100%;
-	background:rgba(255,255,255,0.95);
-	border-radius:16px;
-	box-shadow:inset 0 0 0 1px #efefef;
-	max-height:320px;
-	overflow-y:auto;
-	padding:6px;
-}
-
-.dropdown-item{
-	position:relative;
-	padding:12px 14px;
-	text-align:center;
-	font-weight:600;
-	border-bottom:1px solid #eeeeee;
-	cursor:pointer;
-	border-radius:12px;
-	color:#555555;
-}
-
-.dropdown-item:last-child{
-	border-bottom:none;
-}
-
-.dropdown-item:hover{
-	background:#f0f0f0;
-}
-
-.dropdown-item span{
-	display:block;
-	width:100%;
-	padding-right:32px;
-}
-
-.create-item{
-	background:#fff5eb;
-	color:#d27126;
-	margin-bottom:6px;
-}
-
-.create-item:hover{
-	background:#fde9d5;
-}
-
-.delete-btn{
-	position:absolute;
-	right:10px;
-	top:50%;
-	transform:translateY(-50%);
-	background:#ff5d5d;
-	color:white;
-	border:none;
-	border-radius:10px;
-	padding:2px 8px;
-	font-weight:600;
-	cursor:pointer;
-}
-
-.delete-btn:hover{
-	background:#cc0000;
-}
-
-.popup-overlay{
-	display:none;
-	position:fixed;
-	inset:0;
-	background:rgba(0,0,0,0.2);
-	z-index:99;
-}
-
-#confirmPopup{
-	display:none;
-	position:fixed;
-	top:50%;
-	left:50%;
-	transform:translate(-50%,-50%);
-	width:80%;
-	max-width:280px;
-	background:white;
-	border-radius:20px;
-	box-shadow:0 10px 30px rgba(0,0,0,0.2);
-	z-index:100;
-	padding:20px;
-	text-align:center;
-}
-
-#confirmPopup .message{
-	margin-bottom:20px;
-	font-weight:600;
-	color:#555555;
-}
-
-#confirmPopup .btn-container{
-	display:flex;
-	justify-content:space-between;
-	gap:10px;
-}
-
-#confirmPopup .btn{
-	flex:1;
-	padding:10px 0;
-	border-radius:10px;
-	font-weight:600;
-	cursor:pointer;
-	box-shadow:0 8px 20px rgba(0,0,0,0.08);
-	border:none;
-	font-family:inherit;
-}
-
-#confirmPopup .btn-confirm{
-	background:#FDE2CA;
-}
-
-#confirmPopup .btn-confirm:hover{
-	background:#f7cfae;
-}
-
-#confirmPopup .btn-cancel{
-	background:#E3ECFF;
-}
-
-#confirmPopup .btn-cancel:hover{
-	background:#d2ddff;
-}
-
-@media (max-width:420px){
-	.app-container{
-		padding:16px;
-	}
-}
 </style>
 </head>
 <body>
-
-<div class="app-container">
-	<div class="header">
-		<img src="cat.png" class="cat-img" alt="Ảnh mèo">
-		<div class="title">Hôm nay học gì?</div>
-		<div class="selected-list" id="selectedListLabel">Danh sách đang chọn: <strong>câu</strong></div>
-	</div>
-
-	<div class="card-2">
-		<div class="grid">
-			<div class="box box1" id="btngiaodienphanchinhta">CHÍNH TẢ</div>
-			<div class="box box2" id="btngiaodienphanghinho">GHI NHỚ</div>
-			<div class="box box3" id="btngiaodienphannghe">NGHE</div>
-			<div class="box box4" id="btngiaodienphanphatam">PHÁT ÂM</div>
+	<div class="app-container"><div class="card-1">
+		<div class="card-2">
+			<div class="box-1"></div>
+			<div class="box-2"></div>
+			<div class="box-3"></div>
+			<div class="box-4"></div>
 		</div>
 	</div>
-</div>
-
-<div class="modal-overlay" id="listModalOverlay" style="display: none;"></div>
-
-<div class="list-modal" id="listModal" style="display: none;">
-	<div class="list-modal-header">
-		<div>
-			<div class="list-modal-title">Chọn danh sách từ</div>
-			<div class="list-modal-subtitle" id="listModalSubtitle">Hãy chọn danh sách cho phần chính tả</div>
-		</div>
-		<button class="close-modal-btn" id="closeListModal" type="button">×</button>
-	</div>
-	<div class="dropdown" id="dropdownList"><div class="dropdown-item create-item">Tạo danh sách từ mới</div><div class="dropdown-item"><span>câu</span><button class="delete-btn" type="button">X</button></div><div class="dropdown-item"><span>1</span><button class="delete-btn" type="button">X</button></div></div>
-</div>
-
-<div class="popup-overlay" id="popupOverlay"></div>
-
-<div id="confirmPopup">
-	<div class="message">Bạn có muốn xóa danh sách này không?</div>
-	<div class="btn-container">
-		<button class="btn btn-confirm" id="confirmYes" type="button">Xác nhận</button>
-		<button class="btn btn-cancel" id="confirmNo" type="button">Hủy</button>
-	</div>
-</div>
-
-<script>
-const WORD_LISTS_KEY = "wordLists";
-const SELECTED_LIST_KEY = "selectedList";
-
-let wordLists = JSON.parse(localStorage.getItem(WORD_LISTS_KEY) || "[]");
-let selectedList = JSON.parse(localStorage.getItem(SELECTED_LIST_KEY) || "null");
-
-const selectedListLabel = document.getElementById("selectedListLabel");
-const dropdownList = document.getElementById("dropdownList");
-const listModal = document.getElementById("listModal");
-const listModalOverlay = document.getElementById("listModalOverlay");
-const listModalSubtitle = document.getElementById("listModalSubtitle");
-const closeListModalBtn = document.getElementById("closeListModal");
-const popup = document.getElementById("confirmPopup");
-const popupOverlay = document.getElementById("popupOverlay");
-const popupMessage = popup.querySelector(".message");
-const popupConfirm = document.getElementById("confirmYes");
-const popupCancel = document.getElementById("confirmNo");
-
-let deleteIndex = null;
-let pendingUrl = null;
-let pendingLabel = "";
-
-function isSameList(firstList, secondList) {
-	return JSON.stringify(firstList) === JSON.stringify(secondList);
-}
-
-function saveWordLists() {
-	localStorage.setItem(WORD_LISTS_KEY, JSON.stringify(wordLists));
-}
-
-function updateSelectedListUI() {
-	const selectedStillExists = selectedList && wordLists.some((list) => isSameList(list, selectedList));
-
-	if (!selectedStillExists) {
-		selectedList = null;
-		localStorage.removeItem(SELECTED_LIST_KEY);
-	}
-
-	selectedListLabel.innerHTML = selectedList
-		? `Danh sách đang chọn: <strong>${listNameAsText(selectedList.name)}</strong>`
-		: "Danh sách đang chọn: <strong>Chưa chọn</strong>";
-}
-
-function listNameAsText(name) {
-	const temp = document.createElement("div");
-	temp.textContent = name;
-	return temp.innerHTML;
-}
-
-function openPopup(message) {
-	popupMessage.textContent = message;
-	popup.style.display = "block";
-	popupOverlay.style.display = "block";
-}
-
-function closePopup() {
-	popup.style.display = "none";
-	popupOverlay.style.display = "none";
-	deleteIndex = null;
-}
-
-function openListModal(url, label) {
-	pendingUrl = url;
-	pendingLabel = label;
-	listModalSubtitle.textContent = `Hãy chọn danh sách cho phần ${label.toLowerCase()}`;
-	renderDropdown();
-	listModal.style.display = "block";
-	listModalOverlay.style.display = "block";
-}
-
-function closeListModal() {
-	listModal.style.display = "none";
-	listModalOverlay.style.display = "none";
-	pendingUrl = null;
-	pendingLabel = "";
-}
-
-function selectList(list) {
-	selectedList = list;
-	localStorage.setItem(SELECTED_LIST_KEY, JSON.stringify(selectedList));
-	updateSelectedListUI();
-
-	if (pendingUrl) {
-		const targetUrl = pendingUrl;
-		closeListModal();
-		window.location.href = targetUrl;
-		return;
-	}
-
-	closeListModal();
-}
-
-function renderDropdown() {
-	dropdownList.innerHTML = "";
-
-	const createDiv = document.createElement("div");
-	createDiv.className = "dropdown-item create-item";
-	createDiv.textContent = "Tạo danh sách từ mới";
-	createDiv.onclick = () => {
-		window.location.href = "taodanhsachtu.html";
-	};
-	dropdownList.appendChild(createDiv);
-
-	if (!wordLists.length) {
-		const emptyDiv = document.createElement("div");
-		emptyDiv.className = "dropdown-item";
-		emptyDiv.textContent = "Chưa có danh sách nào được lưu";
-		emptyDiv.style.cursor = "default";
-		dropdownList.appendChild(emptyDiv);
-		return;
-	}
-
-	wordLists.forEach((list, index) => {
-		const div = document.createElement("div");
-		div.className = "dropdown-item";
-
-		const span = document.createElement("span");
-		span.textContent = list.name;
-
-		const delBtn = document.createElement("button");
-		delBtn.className = "delete-btn";
-		delBtn.type = "button";
-		delBtn.textContent = "X";
-		delBtn.onclick = (event) => {
-			event.stopPropagation();
-			deleteIndex = index;
-			openPopup(`Bạn có muốn xóa danh sách "${list.name}" không?`);
-		};
-
-		div.onclick = () => {
-			selectList(list);
-		};
-
-		div.appendChild(span);
-		div.appendChild(delBtn);
-		dropdownList.appendChild(div);
-	});
-}
-
-popupConfirm.onclick = () => {
-	if (deleteIndex === null) {
-		return;
-	}
-
-	const removedList = wordLists[deleteIndex];
-	wordLists.splice(deleteIndex, 1);
-	saveWordLists();
-
-	if (selectedList && removedList && isSameList(selectedList, removedList)) {
-		selectedList = null;
-		localStorage.removeItem(SELECTED_LIST_KEY);
-	}
-
-	updateSelectedListUI();
-	renderDropdown();
-	closePopup();
-};
-
-popupCancel.onclick = closePopup;
-popupOverlay.onclick = closePopup;
-listModalOverlay.onclick = closeListModal;
-closeListModalBtn.onclick = closeListModal;
-
-document.getElementById("btngiaodienphanchinhta").onclick = () => openListModal("giaodienphanchinhta.html", "Chính tả");
-document.getElementById("btngiaodienphanghinho").onclick = () => openListModal("giaodienphanghinho.html", "Ghi nhớ");
-document.getElementById("btngiaodienphannghe").onclick = () => openListModal("giaodienphannghe.html", "Nghe");
-document.getElementById("btngiaodienphanphatam").onclick = () => openListModal("giaodienphanphatam.html", "Phát âm");
-
-window.addEventListener("pageshow", () => {
-	wordLists = JSON.parse(localStorage.getItem(WORD_LISTS_KEY) || "[]");
-	selectedList = JSON.parse(localStorage.getItem(SELECTED_LIST_KEY) || "null");
-	updateSelectedListUI();
-	renderDropdown();
-});
-
-updateSelectedListUI();
-renderDropdown();
-</script>
 
 
-</body></html>
+</body>
+</html>
