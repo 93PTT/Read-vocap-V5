@@ -15,43 +15,58 @@
 	body{
 		margin:0;
 		font-family:'Poppins', sans-serif;
-		background:snow;
-	}
-
-.header{
-	text-align:center;
-	margin-top:10px;
-}
+		background:snow;}
 
 
+	.header{
+		text-align:center;
+		margin-top:10px;}
 
-.cat3-img{
-	width:100%;
-	max-width:250px;
-	border-radius:20px;
-}
+
+	.bg-video{
+		position:fixed;
+		inset:0;
+		width:100%;
+		height:100%;
+		object-fit:cover;
+		z-index:-2;}
+
 
 
 	.app-container{
 		max-width:375px;
 		margin:auto;
-		min-height:100vh;
+		height:100vh;
 		display:flex;
-		flex-direction:column;
-		padding:10px;
-	}
+		justify-content:center;
+		align-items:center;
+		padding-top:env(safe-area-inset-top);
+		padding-bottom:env(safe-area-inset-bottom);
+		padding-left:0px;
+		padding-right:10px;}
+
+
+	.overlay{
+    		position:fixed;
+    		inset:0;
+    		background:rgba(0,0,0,0.25);
+    		z-index:-1;}
+
+
 
 
 
 	.card-1{
-		width: 350px;
+		width:100%;
 		height:350px;
-		margin:-10px auto;
-		background:lightslategray;
-		border-radius:30px;
-		padding:4px;
-		box-shadow:0 20px 50px rgba(0,0,0,0.38);
-	}
+		border-radius:20px;
+		background:rgba(255,255,255,0.2);
+		backdrop-filter:blur(10px);
+		display:flex;
+		flex-direction:column;
+		justify-content:center;
+		align-items:center;
+		transform:translateY(-150px);}
 
 
 
@@ -63,7 +78,7 @@
 		margin:auto;
 		margin-top:10px;
 		border-radius:20px;
-		background:white;
+		background:snow;
 		display:flex;
 		align-items:center;
 		font-size:17px;
@@ -71,18 +86,16 @@
 		color:#555555;
 		justify-content:center;
 		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;
-	}
+		text-align: center;}
 
 
 
 	.box-2{
 		width:300px;
 		height: 100px;
-		margin:10px auto;
-		margin-top:30px;
+		margin:20px auto;
 		border-radius:20px;
-		background:white;
+		background:snow;
 		display:flex;
 		align-items:center;
 		font-size:17px;
@@ -90,8 +103,7 @@
 		color:#555555;
 		justify-content:center;
 		box-shadow:0 8px 20px rgba(0,0,0,0.28);
-		text-align: center;
-	}
+		text-align: center;}
 
 
 
@@ -100,7 +112,7 @@
 		width:100px;
 		height:35px;
 		margin-top:10px;
-		margin-left:240px;
+		align-self:flex-end;
 		border-radius:10px;
 		background:transparent;
 		display:flex;
@@ -108,8 +120,7 @@
 		font-size:15px;
 		font-weight:600;
 		color:#555555;
-		justify-content:center;
-	}
+		justify-content:center;}
 
 
 
@@ -118,35 +129,24 @@
 	.feedback {
   		text-align: center;
   		font-weight: 600;
-  		margin-top: 10px;
+  		margin-top: -10px;
   		min-height: 20px;
   		border-radius: 12px;
   		padding: 6px 0;
 		height: 35px;
+		display: flex;
 		text-align: center;
 		justify-content: center;
-		align-items: center;
-	}
+		align-items: center;}
 
 
 	.feedback.correct { background:transparent; color:#1b5e20; }
 	.feedback.wrong { background:transparent; color:#b71c1c; }
-
-
-	
-
 </style>
 </head>
-
-
-
-
-
 <body>
-	<div class="header">
-		<img src="cat3.png" class="cat3-img">
-	</div>
-
+	<video autoplay muted loop playsinline class="bg-video"><source src="dog.mp4" type="video/mp4"></video>
+	<div class="overlay"></div>
 	<div class="app-container">
 		<div class="card-1">
 			<div class="box box-3" id="btnO3">Từ còn lại</div>
@@ -155,6 +155,9 @@
 			<div class="feedback" id="feedback"></div>
 		</div>
 	</div>
+
+
+
 
 
 <script>
@@ -170,8 +173,7 @@
         document.getElementById("btnO1").innerText = "Không có dữ liệu";
         document.getElementById("btnO2").innerText = "";
         document.getElementById("btnO3").innerText = "";
-        return;
-    	}
+        return;}
     	let word = currentList[currentIndex];
     	document.getElementById("btnO1").innerText = word.vi;
     	document.getElementById("btnO2").innerHTML = `
@@ -186,10 +188,7 @@
                 font-weight:600;
                 text-align:center;
                 border-radius:20px;
-            "
-            onkeydown="handleEnter(event)"
-        />
-    	`;
+            "onkeydown="handleEnter(event)"/>`;
     	document.getElementById("btnO3").innerText =
         `Còn ${currentList.length - currentIndex - 1} từ`;
     	let fb = document.getElementById("feedback");
@@ -197,8 +196,7 @@
     	fb.className = "feedback";
     	setTimeout(()=>{
         document.getElementById("answerInput")?.focus();
-    	},100);
-	}
+    	},100);}
 
 
 
@@ -233,8 +231,7 @@
         showFinish();
         return;
     	}
-    	renderWord();
-	}
+    	renderWord();}
 
 
 
@@ -245,26 +242,21 @@
 
     	let fb = document.getElementById("feedback");
     	fb.innerText = "Hoàn thành danh sách ✔";
-    	fb.className = "feedback correct";
-	}
+    	fb.className = "feedback correct";}
 
 
 
 	function backWord(){
     	if(currentIndex > 0){
         currentIndex--;
-        renderWord();
-    	}
-	}
+        renderWord();}}
 
 
 	function shuffleArray(array){
     	if(!array || array.length <= 1) return;
     	for(let i = array.length - 1; i > 0; i--){
         let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    	}
-	}
+        [array[i], array[j]] = [array[j], array[i]];}}
 	renderWord();
 
 </script>
