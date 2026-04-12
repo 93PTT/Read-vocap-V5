@@ -182,18 +182,104 @@
 
 
 	function renderLists(){
-		const container = document.getElementById("listContainer");
-		container.innerHTML = "";
-		if(wordLists.length === 0){
-		container.innerHTML = "<div class='item'>Chưa có danh sách</div>";
-		return;}
-		wordLists.forEach(list=>{
-		const div = document.createElement("div");
-		div.className = "item";
-		div.innerText = list.name;
-		div.onclick = () => selectList(list);
-		container.appendChild(div);});}
+	const container = document.getElementById("listContainer");
+	container.innerHTML = "";
 
+	// 🔥 NÚT TẠO MỚI
+	const createBtn = document.createElement("div");
+	createBtn.className = "item";
+	createBtn.innerText = "➕ Tạo danh sách mới";
+	createBtn.style.fontWeight = "600";
+	createBtn.onclick = () => {
+		window.location.href = "taodanhsachtu.html";
+	};
+	container.appendChild(createBtn);
+
+	// 🔹 Nếu không có list
+	if(wordLists.length === 0){
+		const empty = document.createElement("div");
+		empty.className = "item";
+		empty.innerText = "Chưa có danh sách";
+		container.appendChild(empty);
+		return;
+	}
+
+	// 🔥 RENDER LIST
+	wordLists.forEach((list, index)=>{
+
+		const row = document.createElement("div");
+		row.className = "item";
+		row.style.display = "flex";
+		row.style.alignItems = "center";
+		row.style.gap = "10px";
+
+		// ✏️ nút sửa (trái)
+		const editBtn = document.createElement("span");
+		editBtn.innerText = "✏️";
+		editBtn.style.cursor = "pointer";
+		editBtn.style.flexShrink = "0";
+
+		editBtn.onclick = (e) => {
+			e.stopPropagation();
+			editList(index);
+		};
+
+		// tên list (giữa)
+		const name = document.createElement("span");
+		name.innerText = list.name;
+		name.style.flex = "1";
+		name.style.textAlign = "center";
+
+		name.onclick = () => selectList(list);
+
+		// 🗑 nút xóa (phải)
+		const deleteBtn = document.createElement("span");
+		deleteBtn.innerText = "🗑";
+		deleteBtn.style.cursor = "pointer";
+		deleteBtn.style.flexShrink = "0";
+
+		deleteBtn.onclick = (e) => {
+	e.stopPropagation();
+	deleteList(index);
+		};
+
+		// hover hiệu ứng nhẹ
+		editBtn.onmouseover = () => editBtn.style.transform = "scale(1.2)";
+		editBtn.onmouseout  = () => editBtn.style.transform = "scale(1)";
+
+		deleteBtn.onmouseover = () => deleteBtn.style.transform = "scale(1.2)";
+		deleteBtn.onmouseout  = () => deleteBtn.style.transform = "scale(1)";
+
+		// gắn vào row
+		row.appendChild(editBtn);
+		row.appendChild(name);
+		row.appendChild(deleteBtn);
+
+		// ❗ QUAN TRỌNG: gắn row vào container
+		container.appendChild(row);
+
+	});
+}
+
+
+
+
+function deleteList(index){
+	if(!confirm("Xóa danh sách này?")) return;
+
+	wordLists.splice(index, 1);
+	localStorage.setItem("wordLists", JSON.stringify(wordLists));
+
+	renderLists(); // render lại
+}
+
+
+
+
+function editList(index){
+	localStorage.setItem("editIndex", index);
+	window.location.href = "taodanhsachtu.html";
+}
 
 
 
