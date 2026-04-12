@@ -124,6 +124,24 @@
 		background:#ddd;}
 
 
+
+
+	.btn-cancel, .btn-delete{
+  		flex:1;
+  		padding:10px;
+  		border:none;
+  		border-radius:12px;
+  		font-weight:600;
+  		cursor:pointer;}
+
+	.btn-cancel{
+  		background:#ddd;}
+
+	.btn-delete{
+  		background:#ff4d4f;
+  		color:white;}
+
+
 </style>
 </head>
 
@@ -145,6 +163,18 @@
 
 	<div class="popup-overlay" id="popup">
 	<div class="popup" id="listContainer"></div>
+	<div class="popup-overlay" id="deletePopup">
+	  	<div class="popup">
+    		<div style="text-align:center; margin-bottom:15px; font-weight:600;">
+      		Xóa danh sách này?
+    	</div>
+
+    	<div style="display:flex; gap:10px;">
+      		<button class="btn-cancel" onclick="closeDeletePopup()">Hủy</button>
+      		<button class="btn-delete" onclick="confirmDelete()">Xóa</button>
+    	</div>
+  </div>
+</div>
 	</div>
 
 <script>
@@ -240,7 +270,7 @@
 
 		deleteBtn.onclick = (e) => {
 	e.stopPropagation();
-	deleteList(index);
+	openDeletePopup(index);
 		};
 
 		// hover hiệu ứng nhẹ
@@ -300,6 +330,29 @@ function editList(index){
 			window.location.href = "giaodienphannghe.html";}
 		else if(selectedMode === "pronounce"){
 			window.location.href = "giaodienphanphatam.html";}}
+
+
+
+let deleteIndex = null;
+
+function openDeletePopup(index){
+  deleteIndex = index;
+  document.getElementById("deletePopup").style.display = "flex";
+}
+
+function closeDeletePopup(){
+  document.getElementById("deletePopup").style.display = "none";
+}
+
+function confirmDelete(){
+  if(deleteIndex === null) return;
+
+  wordLists.splice(deleteIndex, 1);
+  localStorage.setItem("wordLists", JSON.stringify(wordLists));
+
+  closeDeletePopup();
+  renderLists();
+}
 
 
 
